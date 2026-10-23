@@ -1,0 +1,81 @@
+<div class="dash">
+  <div class="page-container">
+
+    <div class="hero mb-4">
+      <div>
+        <h1 class="mb-1">{{ 'ADMIN.USERS.TITLE' | translate }}</h1>
+        <p class="mb-0">{{ 'ADMIN.USERS.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+
+    @if (errorKey()) {
+      <div class="error-alert mb-3" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <div>{{ errorKey()! | translate }}</div>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="loading">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    } @else {
+      <mat-card class="table-card">
+        <div class="table-wrap">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>{{ 'ADMIN.USERS.COLS.NAME' | translate }}</th>
+                <th>{{ 'ADMIN.USERS.COLS.EMAIL' | translate }}</th>
+                <th>{{ 'ADMIN.USERS.COLS.ROLE' | translate }}</th>
+                <th>{{ 'ADMIN.USERS.COLS.SENIORITY' | translate }}</th>
+                <th>{{ 'ADMIN.USERS.COLS.BU' | translate }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of users(); track u.idUser) {
+                <tr>
+                  <td>{{ displayName(u) }}</td>
+                  <td>{{ u.email }}</td>
+                  <td>
+                    <span class="role-pill" [attr.data-role]="u.roleName">
+                      {{ u.roleName || '-' }}
+                    </span>
+                  </td>
+                  <td>{{ u.seniorityLevelName || '-' }}</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="bu-select" subscriptSizing="dynamic">
+                      <mat-select
+                        [ngModel]="drafts[u.idUser] ?? ''"
+                        (ngModelChange)="onSelect(u, $event)">
+                        <mat-option value="">{{ 'ADMIN.USERS.NO_BU' | translate }}</mat-option>
+                        @for (bu of businessUnits(); track bu.id) {
+                          <mat-option [value]="bu.id">{{ bu.name }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                  <td class="text-end">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      [disabled]="!isChanged(u) || saving() === u.idUser"
+                      (click)="save(u)">
+                      @if (saving() === u.idUser) {
+                        <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                      } @else {
+                        {{ 'ADMIN.USERS.SAVE' | translate }}
+                      }
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </mat-card>
+    }
+  </div>
+</div>

@@ -1,0 +1,125 @@
+<mat-toolbar class="navbar">
+  <div class="navbar-inner container-fluid">
+
+    <a class="brand d-flex align-items-center gap-2" routerLink="/dashboard">
+      <span class="brand-mark"></span>
+      <span class="brand-name">{{ 'Navbar.BRAND_NAME' | translate }}</span>
+      <span class="brand-sub d-none d-sm-inline">{{ 'Navbar.SUBTITLE' | translate }}</span>
+    </a>
+
+    <nav class="nav-links d-none d-md-flex">
+      <a mat-button routerLink="/dashboard" routerLinkActive="active">
+        {{ 'Navbar.DASHBOARD' | translate }}
+      </a>
+      @if (canSeeProjects()) {
+        <a mat-button routerLink="/projects" routerLinkActive="active">
+          {{ 'Navbar.PROJECTS' | translate }}
+        </a>
+      }
+      <a mat-button routerLink="/employees" routerLinkActive="active">
+        {{ 'Navbar.EMPLOYEES' | translate }}
+      </a>
+      <a mat-button routerLink="/costs" routerLinkActive="active">
+        {{ 'Navbar.COSTS' | translate }}
+      </a>
+      <a mat-button routerLink="/timesheet" routerLinkActive="active">
+        {{ 'TIMESHEET' | translate }}
+      </a>
+      @if (authService.hasRole('ADMIN')) {
+        <a mat-button routerLink="/admin/users" routerLinkActive="active">
+          {{ 'Navbar.ADMIN_USERS' | translate }}
+        </a>
+      }
+    </nav>
+
+    <mat-menu #mainMenu="matMenu">
+      <button mat-menu-item routerLink="/dashboard">
+        <mat-icon>space_dashboard</mat-icon>
+        {{ 'Navbar.DASHBOARD' | translate }}
+      </button>
+      @if (canSeeProjects()) {
+        <button mat-menu-item routerLink="/projects">
+          <mat-icon>work</mat-icon>
+          {{ 'Navbar.PROJECTS' | translate }}
+        </button>
+      }
+      <button mat-menu-item routerLink="/employees">
+        <mat-icon>groups</mat-icon>
+        {{ 'Navbar.EMPLOYEES' | translate }}
+      </button>
+      <button mat-menu-item routerLink="/costs">
+        <mat-icon>receipt_long</mat-icon>
+        {{ 'Navbar.COSTS' | translate }}
+      </button>
+      <button mat-menu-item routerLink="/timesheet">
+        <mat-icon>schedule</mat-icon>
+        {{ 'TIMESHEET' | translate }}
+      </button>
+      @if (authService.hasRole('ADMIN')) {
+        <button mat-menu-item routerLink="/admin/users">
+          <mat-icon>admin_panel_settings</mat-icon>
+          {{ 'Navbar.ADMIN_USERS' | translate }}
+        </button>
+      }
+    </mat-menu>
+
+    <div class="right d-flex align-items-center gap-2">
+
+      <button
+        mat-icon-button
+        class="mobile-menu-btn d-md-none"
+        [matMenuTriggerFor]="mainMenu"
+        aria-label="Menu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <!-- Notification bell: green pulse on new project, red pulse on critical -->
+      <button
+        mat-icon-button
+        class="icon-btn"
+        [class.icon-btn-highlight]="projectCreatedBellOn()"
+        [class.icon-btn-critical]="projectCriticalBellOn()"
+        [matMenuTriggerFor]="notificationMenu"
+        #notificationMenuTrigger="matMenuTrigger"
+        aria-label="Notifications"
+      >
+        <mat-icon>notifications</mat-icon>
+        @if (notificationService.unreadCount() > 0) {
+          <span class="notif-badge">{{ notificationService.unreadCount() }}</span>
+        }
+      </button>
+
+      <mat-menu #notificationMenu="matMenu" class="notif-menu" xPosition="before">
+        <app-notification-panel (closed)="notificationMenuTrigger.closeMenu()">
+        </app-notification-panel>
+      </mat-menu>
+
+      <button
+        mat-button
+        class="user-btn"
+        [matMenuTriggerFor]="userMenu"
+        disableRipple
+      >
+        <span class="user-inline">
+          <span class="avatar">{{ userInitial() }}</span>
+          <span class="user-name d-none d-sm-inline">
+            {{ userService.currentUser()?.firstName || ('Navbar.USER_PLACEHOLDER' | translate) }}
+          </span>
+          <mat-icon class="chev">expand_more</mat-icon>
+        </span>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="/user/profile">
+          <mat-icon>person</mat-icon>
+          {{ 'Navbar.PROFILE' | translate }}
+        </button>
+        <button mat-menu-item (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          {{ 'Navbar.LOGOUT' | translate }}
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>

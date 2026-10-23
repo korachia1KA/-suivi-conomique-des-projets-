@@ -1,0 +1,55 @@
+<div class="login-wrapper">
+  <mat-card class="login-card shadow-lg animate-fade-in" [class.success]="status() === 'success'" 
+          [class.error]="status() === 'error'">
+    <mat-card-content>
+      
+      <button mat-icon-button class="close-button"
+        [routerLink]="status() === 'success' ? '/auth/login' : '/auth/signup'">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      @if (status() === 'loading') {
+        <div class="text-center">
+          <mat-progress-spinner 
+            diameter="40" 
+            mode="indeterminate" 
+            class="mx-auto mb-3">
+          </mat-progress-spinner>
+          <p class="text-muted">{{ 'CONFIRM_ACCOUNT.LOADING' | translate }}</p>
+        </div>
+      }
+      <div class="flex-fill d-flex flex-column justify-content-center">
+
+      @if (status() === 'success') {
+        <div class="text-center animate-fade-in">
+          <mat-icon class="status-icon success">check_circle</mat-icon>
+          <h1 class="fw-bold mb-2 text-success">
+            {{ 'CONFIRM_ACCOUNT.SUCCESS_TITLE' | translate }}
+          </h1>
+          <p class="mb-4">
+            {{ 'CONFIRM_ACCOUNT.SUCCESS_MESSAGE' | translate:{ email: userEmail() } }}
+          </p>
+          
+          <button mat-raised-button color="primary" class="btn-login" routerLink="/auth/login">
+            {{ 'CONFIRM_ACCOUNT.BACK_TO_LOGIN' | translate }}
+          </button>
+        </div>
+      }
+
+      @if (status() === 'error') {
+        <div class="text-center animate-fade-in">
+          <mat-icon class="status-icon error">cancel</mat-icon>
+          <h1 class="fw-bold mb-2 text-danger">
+            {{ 'CONFIRM_ACCOUNT.ERROR.TITLE' | translate }}
+          </h1>
+          <p class="mb-4" [innerHTML]="errorMessage() | translate"></p>
+          
+          <button mat-stroked-button color="primary" class="btn-signup" routerLink="/auth/signup">
+            {{ 'CONFIRM_ACCOUNT.BACK_TO_SIGNUP' | translate }}
+          </button>
+        </div>
+      }
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

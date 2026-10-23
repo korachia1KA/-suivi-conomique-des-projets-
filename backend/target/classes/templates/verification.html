@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <style>
+        body {
+            padding: 0;
+            background-color: #EEEEEE;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #EEEEEE;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 600px;
+            background-color: #FFFFFF;
+            border-top: 4px solid #0F4C5C;
+            border-bottom: 1px solid #CCCCCC;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .card-header {
+            padding: 30px 40px 10px 40px;
+        }
+
+        .card-body {
+            padding: 20px 40px;
+            font-size: 16px;
+            line-height: 24px;
+            color: #444444;
+        }
+
+        .card-button {
+            padding: 20px 40px 10px 40px;
+        }
+
+        .card-button a {
+            display: inline-block;
+            background-color: #0F4C5C;
+            color: #F8FAFC;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .card-footer {
+            padding: 20px 40px;
+            background-color: #F8F9FA;
+            border-top: 1px solid #EEEEEE;
+        }
+
+        .card-footer p {
+            margin: 0;
+            font-size: 12px;
+            color: #777777;
+            word-wrap: break-word;
+        }
+
+        .footer {
+            padding: 20px 40px;
+            font-size: 11px;
+            color: #999999;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<table role="presentation">
+    <tr>
+        <td style="padding: 40px 10px; text-align: center; vertical-align: top;">
+
+            <!-- Card -->
+            <table role="presentation" class="card">
+
+                <!-- Header -->
+                <tr>
+                    <td class="card-header">
+                        <h1 style="margin: 0; font-size: 18px; font-weight: bold; color: #333333;">
+                            <span th:text="#{mail.verify.subject}">Account Verification</span> |
+                            <span th:text="#{mail.verify.title}">Verify Your Account</span>
+                        </h1>
+                    </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                    <td class="card-body">
+                        <div th:utext="#{mail.verify.thankyou}">
+                            Dear user,<br>thank you for registering.
+                        </div>
+                        <div style="padding-top: 15px;" th:text="#{mail.verify.instruction}">
+                            Please confirm your identity by clicking the button below:
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Button -->
+                <tr>
+                    <td class="card-button">
+                        <a th:href="${link}">
+                            <span th:text="#{mail.verify.button}">ACTIVATE ACCOUNT</span>
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Fallback Link -->
+                <tr>
+                    <td class="card-footer">
+                        <p>
+                            <span th:text="#{mail.verify.copy.link}">If the button does not work, copy and paste this link:</span><br>
+                            <a th:href="${link}" style="color: #0F4C5C; text-decoration: underline;" th:text="${link}">
+                                https://example.com/verify
+                            </a>
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                    <td class="footer">
+                        <p th:text="#{mail.verify.footer}">
+                            This is an automated message, please do not reply.
+                        </p>
+                        <p>
+                            &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2027</span>
+                            <span th:text="#{mail.footer.company}">Company Name</span> –
+                            <span th:text="#{mail.footer.department}">Human Resources</span>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- End Card -->
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

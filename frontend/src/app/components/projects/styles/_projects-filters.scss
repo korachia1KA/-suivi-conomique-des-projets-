@@ -1,0 +1,223 @@
+@use '../../../../styles/variables.scss' as *;
+
+@media (min-width: 769px) {
+
+  td[mat-cell].col-project {
+    position: relative;
+    padding-left: 1.75rem; 
+  }
+
+  td[mat-cell].col-project::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;     
+    bottom: 0;
+
+    width: 7px;
+    border-radius: 0 8px 8px 0;
+    pointer-events: none;
+
+    background: rgba(15, 76, 92, 0.18); 
+  }
+
+  td[mat-cell].col-project[data-status="COMPLETED"]::before {
+    background: rgba(15, 76, 92, 0.55);
+  }
+
+  td[mat-cell].col-project[data-status="PLANNED"]::before {
+    background: transparent;
+    outline: 2px solid rgba(120, 120, 120, 0.35);
+    outline-offset: -2px;
+  }
+
+  td[mat-cell].col-project[data-status="ACTIVE"]::before,
+  td[mat-cell].col-project[data-status="IN_PROGRESS"]::before {
+    background-color: $color-surface-selected;
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(15, 76, 92, 0.55) 0 4px,
+      transparent 4px 9px
+    );
+  }
+}
+
+:host ::ng-deep .filters-menu .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+.filters-panel {
+  background: $color-surface;
+  padding: 2rem 1.75rem;
+  box-shadow: none;
+  max-height: none;
+  overflow: visible; 
+}
+
+.filters-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: $color-text-muted;
+}
+
+.filters-close mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: $color-text-muted;
+}
+
+.filters-close:hover mat-icon {
+  color: $color-primary;
+}
+
+.f-row,
+.f-control {
+  width: auto;
+}
+
+.f-row {
+  display: grid;
+  margin-bottom: .85rem;
+  align-items: center;
+  justify-content: stretch;
+}
+
+.f-label {
+  font-size: 13.5px;
+  padding-bottom: .40rem;
+  font-weight: 500;
+  color: $color-text-muted;
+}
+
+.f-control {
+  height: 42px;
+  border-radius: 14px;
+  border: 1.5px solid $color-border-subtle;
+  background: $color-surface-muted;
+  padding: 0 .7rem;
+  color: $color-text-body;
+  outline: none;
+  display: flex;       
+  align-items: center;
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px $color-surface-selected !important;
+    color: $color-primary;
+  }
+  ::ng-deep .mat-mdc-select-value {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.f-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.range-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.range-val {
+  min-width: 42px;
+  text-align: center;
+  font-weight: 700;
+  color: $color-text-main;
+}
+
+:host ::ng-deep .range-slider {
+  width: 100%;
+}
+
+:host ::ng-deep .range-slider .mdc-slider__track--inactive {
+  background-color: $color-border-subtle;
+}
+
+:host ::ng-deep .range-slider .mdc-slider__track--active_fill {
+  background-color: $color-primary;
+}
+
+:host ::ng-deep .range-slider .mdc-slider__thumb-knob {
+  background-color: $color-primary;
+  border-color: $color-primary;
+}
+
+.f-control option:checked {
+  background: $color-border-subtle !important;
+}
+
+.f-control option:hover {
+  background: $color-surface-selected!important;
+  color: $color-text-body;
+}
+
+:host ::ng-deep .date-control .mat-mdc-text-field-wrapper {
+  height: 42px;
+  background: $color-surface-muted;
+  border-radius: 14px;
+}
+
+:host ::ng-deep .date-control .mdc-notched-outline__leading,
+:host ::ng-deep .date-control .mdc-notched-outline__notch,
+:host ::ng-deep .date-control .mdc-notched-outline__trailing {
+  border-color: $color-border-subtle !important;
+  border-width: 1.5px !important;
+}
+
+:host ::ng-deep .date-control:hover .mdc-notched-outline__leading,
+:host ::ng-deep .date-control:hover .mdc-notched-outline__notch,
+:host ::ng-deep .date-control:hover .mdc-notched-outline__trailing,
+:host ::ng-deep .date-control .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .date-control .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .date-control .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .date-control.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .date-control.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .date-control.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .date-control.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .date-control.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .date-control.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: $color-primary !important;
+}
+
+:host ::ng-deep .date-control .mat-mdc-form-field-infix {
+  min-height: 42px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+:host ::ng-deep .date-control .mat-mdc-icon-button {
+  width: 36px;
+  height: 36px;
+}
+
+@media (max-width: 759.98px) {
+  .cdk-overlay-connected-position-bounding-box {
+    padding: 8px !important;
+  }
+  
+  .f-control {
+    font-size: 16px !important; 
+    height: 48px;
+  }
+
+  .f-actions button {
+    width: 100%; 
+    height: 48px;
+  }
+
+  .filters-panel { max-height: none; }
+}

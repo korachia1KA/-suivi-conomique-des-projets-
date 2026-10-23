@@ -1,0 +1,110 @@
+<div class="employees-page">
+
+  <!-- HERO -->
+  <div class="hero mb-4">
+    <div>
+      <h1 class="mb-1">{{ 'EMPLOYEES.TITLE' | translate }}</h1>
+      <p class="mb-0">
+        {{ (isManager ? 'EMPLOYEES.SUBTITLE_MANAGER' : 'EMPLOYEES.SUBTITLE_ADMIN') | translate }}
+      </p>
+    </div>
+  </div>
+
+  <!-- CARD PRINCIPALE -->
+  <mat-card class="cardx">
+
+    <!-- HEADER + FILTRES -->
+    <div class="cardx-head employees-head">
+      <div>
+        <h2>{{ 'EMPLOYEES.LIST_TITLE' | translate }}</h2>
+        <p class="muted">
+          {{ 'EMPLOYEES.COUNT_LABEL' | translate:{ count: rawEmployees().length } }}
+        </p>
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{ 'EMPLOYEES.SEARCH' | translate }}</mat-label>
+        <input
+          matInput
+          [ngModel]="search()"
+          (ngModelChange)="onSearch($event)"
+          [placeholder]="'EMPLOYEES.SEARCH_PLACEHOLDER' | translate"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ 'EMPLOYEES.FILTER_BU' | translate }}</mat-label>
+        <select matNativeControl [ngModel]="buFilter()" (ngModelChange)="onBuFilter($event)">
+          <option value="">{{ 'EMPLOYEES.ALL' | translate }}</option>
+          @for (bu of uniqueBusinessUnits; track bu) {
+            <option [value]="bu">{{ bu }}</option>
+          }
+        </select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ 'EMPLOYEES.FILTER_ROLE' | translate }}</mat-label>
+        <select matNativeControl [ngModel]="roleFilter()" (ngModelChange)="onRoleFilter($event)">
+          <option value="">{{ 'EMPLOYEES.ALL' | translate }}</option>
+          @for (r of uniqueRoles; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
+        </select>
+      </mat-form-field>
+    </div>
+
+    <!-- CONTENU -->
+    @if (loading()) {
+      <div class="loading-row">
+        <span>{{ 'EMPLOYEES.LOADING' | translate }}</span>
+      </div>
+    } @else if (error()) {
+      <div class="empty">{{ error() }}</div>
+    } @else if (rawEmployees().length === 0) {
+      <div class="empty">{{ 'HOME.EMPTY.NO_EMPLOYEES' | translate }}</div>
+    } @else {
+      <ul class="rows employees-rows">
+        @for (item of rawEmployees(); track employeeId(item)) {
+          <li>
+            <div class="left">
+              <div class="title">{{ employeeDisplayName(item) }}</div>
+
+              @if (isManager) {
+                <div class="sub employee-meta">
+                  <span class="meta-pair">
+                    {{ 'HOME.SECTIONS.EMAIL' | translate }}: {{ employeeEmail(item) }}
+                  </span>
+                  <span class="bu-sep">|</span>
+                  <span class="meta-pair">
+                    {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ employeeSeniority(item) }}
+                  </span>
+                </div>
+              } @else {
+                <div class="sub employee-meta">
+                  <span class="meta-pair">
+                    {{ 'HOME.SECTIONS.ROLE' | translate }}: {{ employeeRole(item) }}
+                  </span>
+                  <span class="bu-sep">|</span>
+                  <span class="meta-pair">
+                    {{ 'HOME.SECTIONS.BU' | translate }}: {{ employeeBU(item) }}
+                  </span>
+                  <span class="bu-sep">|</span>
+                  <span class="meta-pair">
+                    {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ employeeSeniority(item) }}
+                  </span>
+                </div>
+              }
+            </div>
+
+            <div class="right">
+              <span class="employee-email-pill">{{ employeeEmail(item) }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </mat-card>
+</div>

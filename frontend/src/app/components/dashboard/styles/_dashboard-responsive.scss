@@ -1,0 +1,355 @@
+@use '../../../../styles/variables.scss' as *;
+
+@media (max-width: 1500px) {
+  .pie-wrap-callout {
+    margin: 0.15rem 0.8rem;
+    column-gap: 1rem;
+  }
+
+  .pie-chart {
+    width: 112px;
+    height: 112px;
+  }
+
+  .pie-list li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 0.62rem;
+    font-size: 13px;
+  }
+
+  .pie-list .name,
+  .pie-list .val {
+    white-space: normal;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 1230px) {
+  .bottom-grid-3 { grid-template-columns: 1fr; }
+  .bottom-grid.bottom-grid-2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1478px) {
+  .chart-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hist-block, .pie-block { padding: 20px; }
+  .pie-chart { width: 100px; height: 100px; }
+  .hist-list li:nth-child(n + 4) { display: none; }
+
+  .kpi-stack.compact .kpi-value { font-size: 1.1rem; }
+  .compare-list li { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1458px) {
+  .top-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .totals-col {
+    gap: 0.6rem;
+  }
+
+  .kpi-stack.compact .kpi {
+    padding: 20px;
+  }
+}
+
+.pie-block .pie-wrap-callout {
+  margin: 0;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+@media (max-width: 992px) {
+  .chart-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi-stack { grid-template-columns: 1fr; }
+  .totals-col.totals-col-manager .kpi-stack {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .compare-list li { grid-template-columns: 1fr; }
+
+  .bu-sep { display: none; }
+
+  .employee-meta .meta-pair,
+  .bu-meta .bu-meta-item,
+  .project-breakdown .project-breakdown-item {
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .dash { padding: 1.1rem; }
+
+  .kpi { padding: 20px; }
+  .kpi .kpi-value { font-size: 1.45rem; }
+
+  .bar-row { grid-template-columns: 56px minmax(0, 1fr) 84px; }
+  .bar-value { width: 84px; }
+  .axis-row { margin-right: 84px; }
+
+  .name-row > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .delta-under {
+    margin-top: 0;
+    white-space: nowrap;
+  }
+
+  .axis-row-5 span:nth-child(2),
+  .axis-row-5 span:nth-child(4) { display: none; }
+
+  .axis-row-5 { grid-template-columns: repeat(3, 1fr); }
+
+  .project-breakdown { align-items: flex-start; row-gap: 0.1rem; }
+  .project-breakdown .bu-sep { display: none; }
+  .project-breakdown-item { flex: 0 0 100%; }
+
+  .bu-meta { align-items: flex-start; row-gap: 0.1rem; }
+  .bu-sep { display: none; }
+  .bu-meta-item { flex: 0 0 100%; }
+
+  .deadline-legend {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .deadline-legend .legend-item {
+    justify-content: flex-start !important;
+    padding: 0 !important;
+    border-right: 0 !important;
+  }
+
+  .bu-margin-pill.deadline-pill {
+    min-width: 0;
+    text-align: center;
+    line-height: 1.1;
+    padding: 0.22rem 0.55rem;
+  }
+
+  .deadline-pill-main,
+  .deadline-pill-days {
+    display: inline;
+  }
+
+  .deadline-pill-days {
+    margin-left: 0;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .pie-wrap-callout { min-height: 0; }
+
+  .chart-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .hist-full {
+    grid-column: 1 / -1;
+  }
+
+  .pie-wrap-callout {
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+    justify-items: center;
+  }
+
+  .pie-wrap-callout.manager-pie {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0;
+    column-gap: 0.9rem;
+    justify-items: stretch;
+    align-items: center;
+  }
+
+  .pie-chart {
+    width: 102px;
+    height: 102px;
+  }
+
+  .pie-center { width: 105px; }
+
+  .pie-center-value { font-size: 1.1rem; }
+
+  .pie-callout {
+    max-width: 140px;
+    font-size: 0.68rem;
+  }
+
+  .pie-link { border-top-width: 1.25px; }
+
+  .pie-list .val .count-part {
+    display: none;
+  }
+
+  .pie-list .val {
+    gap: 0;
+  }
+
+  .pie-list .val .pct-part::before,
+  .pie-list .val .pct-part::after {
+    content: "";
+  }
+
+  .pie-list li {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .chart-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .chart-layout.manager-chart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pie-chart {
+    width: 92px;
+    height: 92px;
+  }
+
+  .pie-wrap-callout.manager-pie {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0;
+    column-gap: 0.85rem;
+    justify-items: stretch;
+    align-items: center;
+  }
+
+  .pie-list .name,
+  .pie-list .val {
+    font-size: 12px !important;
+  }
+
+  .pie-list li {
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 566px) {
+  .dash { padding: 0.75rem; }
+
+  .hero.mb-4,
+  .top-grid.mb-4 {
+    margin-bottom: 0.9rem !important;
+  }
+
+  .top-grid,
+  .bottom-grid {
+    gap: 0.75rem;
+  }
+
+  .lower-section {
+    margin-top: 0.9rem;
+  }
+
+  .kpi { padding: 16px; }
+  .kpi .kpi-value { font-size: 1.25rem; }
+
+  .chart-card,
+  .hist-block,
+  .pie-block {
+    padding: 14px;
+  }
+
+  .group-title {
+    margin-bottom: 10px;
+  }
+
+  .pie-wrap-callout,
+  .pie-wrap-callout.manager-pie {
+    row-gap: 0.65rem;
+  }
+
+  .compare-list li {
+    padding: 14px;
+    gap: 0.55rem;
+  }
+
+  .name-row > div {
+    flex-wrap: wrap;
+    row-gap: 0.2rem;
+  }
+
+  .delta-under {
+    white-space: normal;
+  }
+
+  .bar-row {
+    grid-template-columns: 48px minmax(0, 1fr) 72px;
+    gap: 0.45rem;
+  }
+
+  .bar-value {
+    width: 72px;
+    font-size: 12px;
+  }
+
+  .axis-row {
+    margin-left: 48px;
+    margin-right: 72px;
+  }
+
+  .bu-meta-item,
+  .meta-pair,
+  .seniority-pair,
+  .project-breakdown-item {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .rows li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .rows li .right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .cardx-head .link {
+    white-space: normal;
+  }
+
+  .hist-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .hist-head .name,
+  .hist-head .val {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .pie-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .pie-list .name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pie-list .val {
+    white-space: nowrap;
+    justify-self: end;
+  }
+}

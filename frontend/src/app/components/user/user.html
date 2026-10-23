@@ -1,0 +1,351 @@
+<div class="dash">
+  <div class="user-container">
+
+    <div class="hero mb-4">
+      <div class="hero-copy">
+        <h1>
+          @if (!loading()) {
+            {{ 'USER.TITLE' | translate }} {{ profileForm.get('firstName')?.value }} {{ profileForm.get('lastName')?.value }}
+          }
+        </h1>
+        <p>{{ 'USER.DESCRIPTION' | translate }}</p>
+      </div>
+    </div>
+
+    @if (globalErrorKey()) {
+      <div class="error-alert" role="alert">
+        <mat-icon class="me-2">error_outline</mat-icon>
+        <div>{{ globalErrorKey()! | translate }}</div>
+      </div>
+    }
+
+    <form [formGroup]="profileForm">
+
+      <mat-card class="section-card mb-3">
+        <div class="section-head">
+          <h2>{{ 'USER.PERSONAL' | translate }}</h2>
+
+          @if (!editPersonal()) {
+            <button mat-icon-button color="primary" class="edit-btn"
+                    type="button" aria-label="Modifica personal"
+                    (click)="enableSection('personal')">
+              <mat-icon>edit</mat-icon>
+            </button>
+          } @else {
+            <div class="d-flex gap-2">
+              <button class="btn-soft" type="button"
+                      [disabled]="saving()" (click)="cancelSection('personal')">
+                {{ 'USER.CANCEL' | translate }}
+              </button>
+
+              <button class="btn-primary" type="button"
+                      [disabled]="saving() || profileForm.invalid"
+                      (click)="saveSection('personal')">
+                @if (!saving()) { {{ 'USER.SAVE' | translate }} }
+                @else { <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner> }
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.FIRST_NAME' | translate }}</mat-label>
+              <input matInput formControlName="firstName">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.LAST_NAME' | translate }}</mat-label>
+              <input matInput formControlName="lastName">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100 birth-date-field">
+              <mat-label>{{ 'USER.BIRTH_DATE' | translate }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="birthDatePicker"
+                [value]="birthDayValue"
+                [disabled]="profileForm.get('birthDay')?.disabled"
+                (dateChange)="onBirthDayChange($event.value)">
+              <mat-datepicker-toggle matIconSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #birthDatePicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.BIRTH_PLACE' | translate }}</mat-label>
+              <input matInput formControlName="birthPlace">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.ID_CARD_NUMBER' | translate }}</mat-label>
+              <input matInput formControlName="idCardNumber">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.FISCAL_CODE' | translate }}</mat-label>
+              <input matInput formControlName="fiscalCode">
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="section-card mb-3">
+        <div class="section-head">
+          <h2>{{ 'USER.RESIDENCE' | translate }}</h2>
+
+          @if (!editResidence()) {
+            <button mat-icon-button color="primary" class="edit-btn"
+                    type="button" [attr.aria-label]="'USER.EDIT' | translate"
+                    (click)="enableSection('residence')">
+              <mat-icon>edit</mat-icon>
+            </button>
+          } @else {
+            <div class="d-flex gap-2">
+              <button class="btn-soft" type="button"
+                      [disabled]="saving()" (click)="cancelSection('residence')">
+                {{ 'USER.CANCEL' | translate }}
+              </button>
+
+              <button class="btn-primary" type="button"
+                      [disabled]="saving() || profileForm.invalid"
+                      (click)="saveSection('residence')">
+                @if (!saving()) { {{ 'USER.SAVE' | translate }} }
+                @else { <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner> }
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-md-8">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.ADDRESS' | translate }}</mat-label>
+              <input matInput formControlName="address">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.CITY' | translate }}</mat-label>
+              <input matInput formControlName="city">
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="section-card mb-3">
+        <div class="section-head">
+          <h2>{{ 'USER.CONTACTS' | translate }}</h2>
+
+          @if (!editContacts()) {
+            <button mat-icon-button color="primary" class="edit-btn"
+                    type="button" [attr.aria-label]="'USER.EDIT' | translate"
+                    (click)="enableSection('contacts')">
+              <mat-icon>edit</mat-icon>
+            </button>
+          } @else {
+            <div class="d-flex gap-2">
+              <button class="btn-soft" type="button"
+                      [disabled]="saving()" (click)="cancelSection('contacts')">
+                {{ 'USER.CANCEL' | translate }}
+              </button>
+
+              <button class="btn-primary" type="button"
+                      [disabled]="saving() || profileForm.invalid"
+                      (click)="saveSection('contacts')">
+                @if (!saving()) { {{ 'USER.SAVE' | translate }} }
+                @else { <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner> }
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.PHONE' | translate }}</mat-label>
+              <input matInput formControlName="phoneNumber">
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.EMAIL' | translate }}</mat-label>
+              <input matInput type="email" formControlName="email">
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="section-card">
+        <div class="section-head">
+          <h2>{{ 'USER.BANK' | translate }}</h2>
+
+          @if (!editBank()) {
+            <button mat-icon-button color="primary" class="edit-btn"
+                    type="button" [attr.aria-label]="'USER.EDIT' | translate"
+                    (click)="enableSection('bank')">
+              <mat-icon>edit</mat-icon>
+            </button>
+          } @else {
+            <div class="d-flex gap-2">
+              <button class="btn-soft" type="button"
+                      [disabled]="saving()" (click)="cancelSection('bank')">
+                {{ 'USER.CANCEL' | translate }}
+              </button>
+
+              <button class="btn-primary" type="button"
+                      [disabled]="saving() || profileForm.invalid"
+                      (click)="saveSection('bank')">
+                @if (!saving()) { {{ 'USER.SAVE' | translate }} }
+                @else { <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner> }
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-12">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.IBAN' | translate }}</mat-label>
+              <input matInput formControlName="iban">
+            </mat-form-field>
+          </div>
+
+          <div class="col-12">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ 'USER.IBAN_HOLDER' | translate }}</mat-label>
+              <input matInput formControlName="ibanHolder">
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card>
+
+        <mat-card class="section-card mt-3">
+        <div class="section-head">
+            <h2>{{ 'USER.PASSWORD' | translate }}</h2>
+
+            @if (!passwordEdit()) {
+            <button mat-icon-button
+                class="edit-btn"
+                type="button"
+                [attr.aria-label]="'USER.EDIT' | translate"
+                (click)="enablePasswordEdit()"
+            >
+                <mat-icon>edit</mat-icon>
+            </button>
+            } @else {
+            <div class="d-flex gap-2">
+                <button class="btn-soft" type="button" (click)="cancelPasswordEdit()">
+                {{ 'USER.CANCEL' | translate }}
+                </button>
+
+                <button class="btn-primary" type="button"
+                        [disabled]="loadingPassword() || passwordForm.invalid"
+                        (click)="onChangePassword()">
+                @if (!loadingPassword()) { {{ 'USER.SAVE' | translate }} }
+                @else {
+                    <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+                }
+                </button>
+            </div>
+            }
+        </div>
+
+        @if (passwordEdit()) {
+            <div class="row g-3 mt-1" [formGroup]="passwordForm">
+            <div class="col-12">
+                <mat-form-field appearance="outline" class="w-100">
+                <mat-label>{{ 'USER.CURRENT_PASSWORD' | translate }}</mat-label>
+                <input matInput [type]="hideCurrent ? 'password' : 'text'"
+                        formControlName="currentPassword" autocomplete="current-password">
+                <button class="mat-icon-button"
+                        mat-icon-button 
+                        matSuffix 
+                        type="button" 
+                        (click)="hideCurrent = !hideCurrent"
+                        [attr.aria-label]="'USER.SHOW_PASSWORD' | translate">
+                    <mat-icon>
+                    {{ hideCurrent ? 'visibility_off' : 'visibility' }}
+                    </mat-icon>
+                </button>
+
+                @if (passwordForm.get('currentPassword')?.hasError('required')) {
+                    <mat-error>{{ 'USER.ERROR.REQUIRED_FIELD' | translate }}</mat-error>
+                }
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                <mat-label>{{ 'USER.NEW_PASSWORD' | translate }}</mat-label>
+                <input matInput [type]="hideNew ? 'password' : 'text'"
+                        formControlName="newPassword" autocomplete="new-password">
+                <button class="mat-icon-button"
+                        mat-icon-button 
+                        matSuffix 
+                        type="button" 
+                        (click)="hideNew = !hideNew"
+                        [attr.aria-label]="'USER.SHOW_PASSWORD' | translate">
+                    <mat-icon>
+                    {{ hideNew ? 'visibility_off' : 'visibility' }}
+                    </mat-icon>
+                </button>
+
+                @if (passwordForm.get('newPassword')?.hasError('required')) {
+                    <mat-error>{{ 'USER.ERROR.REQUIRED_FIELD' | translate }}</mat-error>
+                }
+                @if (passwordForm.get('newPassword')?.hasError('pattern')) {
+                    <mat-error>{{ 'USER.ERROR.INVALID_PASSWORD' | translate }}</mat-error>
+                }
+                </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                <mat-label>{{ 'USER.CONFIRM_NEW_PASSWORD' | translate }}</mat-label>
+                <input matInput [type]="hideConfirm ? 'password' : 'text'"
+                        formControlName="confirmNewPassword" autocomplete="new-password">
+                <button class="mat-icon-button"
+                        mat-icon-button 
+                        matSuffix 
+                        type="button" 
+                        (click)="hideConfirm = !hideConfirm"
+                        [attr.aria-label]="'USER.SHOW_PASSWORD' | translate">
+                    <mat-icon>
+                    {{ hideConfirm ? 'visibility_off' : 'visibility' }}
+                    </mat-icon>
+                </button>
+
+                @if (passwordForm.get('confirmNewPassword')?.hasError('required')) {
+                    <mat-error>{{ 'USER.ERROR.REQUIRED_FIELD' | translate }}</mat-error>
+                }
+                @if (passwordForm.hasError('passwordMismatch')) {
+                    <mat-error>{{ 'USER.ERROR.PASSWORD_MISMATCH' | translate }}</mat-error>
+                }
+                </mat-form-field>
+            </div>
+            </div>
+
+            @if (passwordErrorKey()) {
+            <div class="error-alert" role="alert">
+                <mat-icon class="me-2">error_outline</mat-icon>
+                <div>{{ passwordErrorKey()! | translate }}</div>
+            </div>
+            }
+        }
+        </mat-card>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,110 @@
+@use './variables.scss' as *;
+@use 'sass:color';
+
+@mixin auth-shell {
+  min-height: 100svh;
+  background-color: $color-page-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+@mixin auth-card($max-width: 420px) {
+  position: relative;
+  width: 100%;
+  max-width: $max-width;
+  background-color: $color-surface;
+  border-radius: 16px;
+  border: 1px solid $color-border-subtle;
+  overflow: hidden;
+}
+
+@mixin auth-content {
+  padding: 2rem 1.75rem;
+}
+
+@mixin auth-title {
+  color: $color-text-main;
+  font-size: 1.5rem;
+}
+
+@mixin auth-muted-text {
+  color: $color-text-muted;
+}
+
+@mixin auth-primary-button {
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 600;
+  background-color: $color-primary !important;
+  color: $color-white !important;
+
+  &:hover {
+    background-color: $color-primary-hover !important;
+  }
+
+  &:disabled {
+    background-color: color.adjust($color-primary, $lightness: 25%) !important;
+  }
+}
+
+@mixin auth-pill-switch {
+  display: flex;
+  gap: 4px;
+  background: $color-surface-muted;
+  backdrop-filter: blur(6px);
+  border: 1px solid $color-border-subtle;
+  border-radius: 999px;
+  padding: 3px;
+}
+
+@mixin auth-form-field-shell {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: $color-border-strong !important;
+  }
+
+  .mat-mdc-form-field.mat-focused:not(.mat-form-field-invalid) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: $color-primary !important;
+    }
+
+    .mat-mdc-floating-label {
+      color: $color-primary !important;
+    }
+
+    input {
+      caret-color: $color-primary !important;
+    }
+  }
+
+  .mat-mdc-floating-label {
+    color: $color-text-muted !important;
+  }
+
+  .mat-mdc-form-field.mat-form-field-invalid {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: $color-danger !important;
+    }
+
+    .mat-mdc-floating-label,
+    .mat-mdc-form-field-error {
+      color: $color-danger !important;
+    }
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    min-height: 1.25rem;
+    padding-top: 0.25rem;
+  }
+}

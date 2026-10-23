@@ -1,0 +1,343 @@
+<div class="dash">
+  <div class="user-container">
+    <div class="hero mb-4">
+      <div>
+        <h1 class="mb-1">{{ 'PROJECT.ADD_FORM.TITLE' | translate }}</h1>
+        <p class="mb-0">{{ 'PROJECT.DESCRIPTION' | translate }}</p>
+      </div>
+    </div>
+
+    <mat-card class="section-card mb-3">
+      <div class="section-head">
+        <h2>{{ 'PROJECT.ADD_FORM.TITLE' | translate }}</h2>
+
+        <div class="d-flex gap-2">
+          <button class="btn-soft" type="button" [routerLink]="'/projects'" [disabled]="saving()">
+            {{ 'PROJECT.ADD_FORM.CANCEL' | translate }}
+          </button>
+
+          <button class="btn-primary" type="submit" [disabled]="saving()" form="createProjectForm">
+            {{ saving() ? ('PROJECT.ADD_FORM.SAVING' | translate) : ('PROJECT.ADD_FORM.SAVE' | translate) }}
+          </button>
+        </div>
+      </div>
+
+      @if (errorKey()) {
+        <div class="error-alert mb-2" role="alert">
+          <mat-icon class="me-2">error_outline</mat-icon>
+          <div>{{ errorKey()! | translate }}</div>
+        </div>
+      }
+
+      <form
+        id="createProjectForm"
+        novalidate
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        class="row g-3 create-project-form"
+        style="margin: 4px -8px 0;"
+      >
+
+        @if (!isManager()) {
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+              <mat-label>{{ 'PROJECT.ADD_FORM.BUSINESS_UNIT' | translate }}</mat-label>
+              <mat-select formControlName="businessUnitId" panelClass="bu-panel-zebra">
+                @for (bu of businessUnits(); track bu.id) {
+                  <mat-option [value]="bu.id">{{ bu.name }}</mat-option>
+                }
+              </mat-select>
+
+              @if (form.controls.businessUnitId.touched && form.controls.businessUnitId.invalid) {
+                <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+              <mat-label>{{ 'PROJECT.ADD_FORM.NAME' | translate }}</mat-label>
+              <input matInput formControlName="name" />
+
+              @if (form.controls.name.touched && form.controls.name.invalid) {
+                <mat-error>
+                  {{ form.controls.name.errors?.['required'] ? ('PROJECT.REQUIRED' | translate) : ('COMMON.INVALID' | translate) }}
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        } @else {
+          <div class="col-12">
+            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+              <mat-label>{{ 'PROJECT.ADD_FORM.NAME' | translate }}</mat-label>
+              <input matInput formControlName="name" />
+
+              @if (form.controls.name.touched && form.controls.name.invalid) {
+                <mat-error>
+                  {{ form.controls.name.errors?.['required'] ? ('PROJECT.REQUIRED' | translate) : ('COMMON.INVALID' | translate) }}
+                </mat-error>
+              }
+            </mat-form-field>
+          </div>
+        }
+
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100 date-field" subscriptSizing="dynamic">
+            <mat-label>{{ 'PROJECT.ADD_FORM.START_DATE' | translate }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              formControlName="startDate"
+              [errorStateMatcher]="dirtyErrorStateMatcher"
+            />
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+
+            @if (
+              (form.controls.startDate.dirty || form.controls.startDate.touched) &&
+              form.controls.startDate.hasError('matDatepickerParse')
+            ) {
+              <mat-error>{{ 'PROJECT.ERROR.INVALID_DATE' | translate }}</mat-error>
+            } @else if (
+              (form.controls.startDate.dirty || form.controls.startDate.touched) &&
+              form.controls.startDate.hasError('required')
+            ) {
+              <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-6">
+          <mat-form-field appearance="outline" class="w-100 date-field" subscriptSizing="dynamic">
+            <mat-label>{{ 'PROJECT.ADD_FORM.PLANNED_END_DATE' | translate }}</mat-label>
+            <input
+              matInput
+              [matDatepicker]="plannedEndPicker"
+              formControlName="plannedEndDate"
+              [errorStateMatcher]="dirtyErrorStateMatcher"
+            />
+            <mat-datepicker-toggle matSuffix [for]="plannedEndPicker"></mat-datepicker-toggle>
+            <mat-datepicker #plannedEndPicker></mat-datepicker>
+
+            @if (
+              (form.controls.plannedEndDate.dirty || form.controls.plannedEndDate.touched) &&
+              form.controls.plannedEndDate.hasError('matDatepickerParse')
+            ) {
+              <mat-error>{{ 'PROJECT.ERROR.INVALID_DATE' | translate }}</mat-error>
+            } @else if (
+              (form.controls.plannedEndDate.dirty || form.controls.plannedEndDate.touched) &&
+              form.controls.plannedEndDate.hasError('required')
+            ) {
+              <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+            } @else if (
+              (form.controls.plannedEndDate.dirty || form.controls.plannedEndDate.touched) &&
+              form.controls.plannedEndDate.hasError('endBeforeStart')
+            ) {
+              <mat-error>{{ 'PROJECT.ERROR.END_BEFORE_START' | translate }}</mat-error>
+            } @else if (
+              (form.controls.plannedEndDate.dirty || form.controls.plannedEndDate.touched) &&
+              form.controls.plannedEndDate.hasError('endBeforeToday')
+            ) {
+              <mat-error>{{ 'PROJECT.ERROR.END_BEFORE_TODAY' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <mat-label>{{ 'PROJECT.ADD_FORM.ESTIMATED_COST' | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              formControlName="estimatedCost"
+              (blur)="formatMoneyControl('estimatedCost')"
+            />
+            <span matSuffix class="euro-suffix-wrap">
+              <mat-icon class="euro-suffix">euro_symbol</mat-icon>
+            </span>
+
+            @if (form.controls.estimatedCost.touched && form.controls.estimatedCost.invalid) {
+              <mat-error>
+                {{
+                  form.controls.estimatedCost.errors?.['required']
+                    ? ('PROJECT.REQUIRED' | translate)
+                    : ('PROJECT.INVALID' | translate)
+                }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <mat-label>{{ 'PROJECT.ADD_FORM.ESTIMATED_REVENUE' | translate }}</mat-label>
+            <input
+              matInput
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              formControlName="estimatedRevenue"
+              (blur)="formatMoneyControl('estimatedRevenue')"
+            />
+            <span matSuffix class="euro-suffix-wrap">
+              <mat-icon class="euro-suffix">euro_symbol</mat-icon>
+            </span>
+
+            @if (form.controls.estimatedRevenue.touched && form.controls.estimatedRevenue.invalid) {
+              <mat-error>
+                {{
+                  form.controls.estimatedRevenue.errors?.['required']
+                    ? ('PROJECT.REQUIRED' | translate)
+                    : ('PROJECT.INVALID' | translate)
+                }}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4">
+          <mat-form-field
+            appearance="outline"
+            class="w-100 expected-margin-field"
+            [class.margin-negative]="expectedMarginNegative"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>{{ 'PROJECT.ADD_FORM.EXPECTED_MARGIN' | translate }}</mat-label>
+            <input
+              matInput
+              readonly
+              aria-readonly="true"
+              placeholder="-"
+              [value]="expectedMarginPct() | number:'1.2-2'"
+            />
+            <span matSuffix class="pct-suffix-wrap">
+              <span class="pct-suffix">%</span>
+            </span>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12">
+          <div class="team-head">
+            <div>
+              <h2 class="team-title">{{ 'PROJECT.ADD_FORM.TEAM_TITLE' | translate }}</h2>
+              <p class="mb-0 muted">{{ 'PROJECT.ADD_FORM.TEAM_SUBTITLE' | translate }}</p>
+            </div>
+
+            <button
+              class="btn-soft team-add-btn"
+              type="button"
+              (click)="addTeamRow()"
+              [disabled]="saving()"
+            >
+              <mat-icon class="me-1">add</mat-icon>
+              {{ 'PROJECT.ADD_FORM.ADD_EMPLOYEE_ROW' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="col-12" formArrayName="team">
+          @for (ctrl of team.controls; track $index) {
+            <div class="team-row" [formGroupName]="$index">
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <mat-label>{{ 'PROJECT.ADD_FORM.TEAM_USER_NAME' | translate }}</mat-label>
+                    <input
+                      matInput
+                      required
+                      formControlName="userId"
+                      placeholder="Mario Rossi"
+                      autocomplete="off"
+                      [matAutocomplete]="userAuto"
+                    />
+
+                    <mat-autocomplete
+                      #userAuto="matAutocomplete"
+                      autoActiveFirstOption
+                      [displayWith]="assignableUserDisplay"
+                    >
+                      @if (assignableUsersLoading()) {
+                        <mat-option disabled>Loading...</mat-option>
+                      } @else {
+                        @for (u of filteredAssignableUsers(ctrl.get('userId')?.value); track $index) {
+                          <mat-option [value]="assignableUserId(u)">{{ assignableUserLabel(u) }}</mat-option>
+                        } @empty {
+                          <mat-option disabled>No results</mat-option>
+                        }
+                      }
+                    </mat-autocomplete>
+
+                    @if (ctrl.get('userId')?.touched && ctrl.get('userId')?.invalid) {
+                      <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-3">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <mat-label>{{ 'PROJECT.ADD_FORM.TEAM_ROLE' | translate }}</mat-label>
+                    <mat-select required formControlName="role">
+                      @for (r of teamRoleOptions; track r) {
+                        <mat-option [value]="r">{{ r }}</mat-option>
+                      }
+                    </mat-select>
+
+                    @if (ctrl.get('role')?.touched && ctrl.get('role')?.invalid) {
+                      <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-2">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <mat-label>{{ 'PROJECT.ADD_FORM.TEAM_DAYS' | translate }}</mat-label>
+                    <input matInput required type="number" min="0" step="1" formControlName="days" />
+
+                    @if (ctrl.get('days')?.touched && ctrl.get('days')?.invalid) {
+                      <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-2">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <mat-label>{{ 'PROJECT.ADD_FORM.TEAM_HOURLY_COST' | translate }}</mat-label>
+                    <input matInput required type="number" min="0" step="0.01" formControlName="hourlyCost" />
+                    <span matSuffix class="euro-suffix-wrap">
+                      <mat-icon class="euro-suffix">euro_symbol</mat-icon>
+                    </span>
+
+                    @if (ctrl.get('hourlyCost')?.touched && ctrl.get('hourlyCost')?.invalid) {
+                      <mat-error>{{ 'PROJECT.REQUIRED' | translate }}</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-1 team-remove-col">
+                  <button
+                    mat-icon-button
+                    class="team-remove-btn"
+                    type="button"
+                    (click)="removeTeamRow($index)"
+                    [disabled]="saving()"
+                    aria-label="Rimuovi dipendente"
+                  >
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="team-empty muted">{{ 'PROJECT.ADD_FORM.TEAM_EMPTY' | translate }}</div>
+          }
+
+          <div class="team-stats muted mt-2">
+            <span>{{ 'PROJECT.ADD_FORM.TEAM_SELECTED' | translate }}: <b>{{ team.controls.length }}</b></span>
+          </div>
+        </div>
+      </form>
+    </mat-card>
+  </div>
+</div>

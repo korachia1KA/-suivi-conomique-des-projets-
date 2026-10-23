@@ -1,0 +1,377 @@
+@use '../../../../styles/auth-common' as auth;
+@use '../../../../styles/variables.scss' as *;
+
+.dash {
+  min-height: 100svh;
+  background: $color-page-bg;
+  padding: 1.25rem;
+}
+
+.user-container {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.create-project-form {
+  --bs-gutter-x: 1rem;
+  --bs-gutter-y: 1rem;
+}
+
+.create-project-form .row {
+  --bs-gutter-x: 1rem;
+  --bs-gutter-y: 1rem;
+}
+
+.hero {
+  background: $color-surface;
+  border: 1px solid $color-border-subtle;
+  border-radius: 18px;
+  padding: 1.25rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background: $color-primary;
+  }
+
+  h1 {
+    margin: 0;
+    font-weight: 700;
+    color: $color-text-main;
+    font-size: 1.6rem;
+  }
+
+  p {
+    color: $color-text-muted;
+  }
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-form-field {
+  width: 100%;
+  min-height: 64px !important;
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-text-field-wrapper {
+  min-height: 64px !important;
+  height: auto !important;
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-form-field-flex {
+  min-height: 64px;
+  height: auto;
+  align-items: stretch;
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-form-field-infix {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-input-element {
+  line-height: 1.4 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date'] {
+  height: auto !important;
+  min-height: 64px !important;
+  line-height: normal !important;
+  font-size: 1rem;
+  box-sizing: border-box;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-date-and-time-value {
+  display: block;
+  line-height: normal !important;
+}
+
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit,
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit-fields-wrapper,
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit-text,
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit-month-field,
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit-day-field,
+:host ::ng-deep .create-project-form input.mat-mdc-input-element[type='date']::-webkit-datetime-edit-year-field {
+  line-height: normal !important;
+  padding: 0 !important;
+}
+
+.edit-btn {
+  color: $color-text-muted;
+  background-color: $color-surface-muted !important; 
+  border: 1px solid $color-border-subtle !important;
+  width: 38px;
+  height: 38px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  min-width: 0 !important;
+
+  &:hover {
+    color: $color-primary;
+    background: rgba($color-primary, 0.08) !important;
+  }
+  
+  mat-icon {
+    margin: 0 !important; 
+    line-height: 1;
+  }
+}
+
+:host ::ng-deep {
+  
+  .mat-mdc-form-field-suffix .mat-mdc-icon-button {
+    background-color: transparent !important; 
+    border: none !important;                 
+    box-shadow: none !important;             
+    width: 48px !important;                  
+    height: 48px !important;
+    
+    .mat-mdc-button-touch-target {
+       display: none; 
+    }
+
+    &:hover mat-icon {
+      color: $color-primary !important;
+    }
+  }
+}
+
+.mat-icon-button{
+    background-color: transparent !important; 
+    border: none !important;                 
+    margin-right: 5px;
+}
+
+mat-icon {
+    margin: 0 !important; 
+    color: $color-text-muted !important;
+    font-size: 24px;
+}
+
+.section-card {
+  border-radius: 16px;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  padding: 1rem;
+  position: relative;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .75rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $color-text-main;
+  }
+}
+
+.team-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.team-add-btn {
+  width: auto !important;
+  min-width: 190px;
+  margin-right: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  white-space: nowrap;
+
+  mat-icon {
+    margin: 0 !important;
+    color: inherit !important;
+  }
+}
+
+.team-remove-btn {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 50% !important;
+  border: 1px solid $color-border-subtle !important;
+  background: $color-surface-muted !important;
+  color: $color-text-muted !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  &:hover {
+    background: $color-surface-hover !important;
+    color: $color-danger !important;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+  }
+
+  mat-icon {
+    color: inherit !important;
+    margin: 0 !important;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.team-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: $color-text-main;
+}
+
+.team-row {
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed rgba(15, 76, 92, 0.18);
+
+  &:last-child { border-bottom: 0; }
+}
+
+.team-remove-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 64px; 
+}
+
+.team-empty {
+  padding: 0.6rem 0;
+}
+
+.team-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  .dot { opacity: 0.6; }
+}
+
+input.mat-mdc-input-element {
+  line-height: 1.4 !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+:host ::ng-deep {
+  @include auth.auth-form-field-shell;
+  .mat-mdc-form-field-subscript-wrapper {
+    font-size: 12px;
+    padding-top: 4px !important;
+    margin: 0 !important;
+    position: static !important;
+    transform: none !important;
+  }
+}
+
+:host ::ng-deep .create-project-form .mat-mdc-form-field-bottom-align::before {
+  content: none !important;
+}
+
+.error-alert {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: $color-danger;
+
+  mat-icon {
+    color: $color-danger !important;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+}
+
+:host ::ng-deep .bu-panel-zebra .mat-mdc-option:nth-child(odd) {
+  background: $color-white;
+}
+
+:host ::ng-deep .bu-panel-zebra .mat-mdc-option:nth-child(even) {
+  background: rgba(15, 76, 92, 0.05);
+}
+
+:host ::ng-deep .create-project-form .euro-suffix {
+  font-size: 18px !important;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  color: $color-text-muted !important;
+}
+
+:host ::ng-deep .create-project-form .euro-suffix-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 15px !important;
+}
+
+:host ::ng-deep .create-project-form .pct-suffix-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 15px !important;
+}
+
+:host ::ng-deep .create-project-form .pct-suffix {
+  color: $color-text-muted !important;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1;
+}
+
+:host ::ng-deep .create-project-form .mat-datepicker-toggle .mat-datepicker-toggle-default-icon {
+  width: 18px;
+  height: 18px;
+}

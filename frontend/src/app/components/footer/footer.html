@@ -1,0 +1,33 @@
+<footer class="footer">
+
+  <div class="container-fluid footer-inner">
+
+    <div class="footer-left">
+      <div class="brand">{{ 'Footer.BRAND_NAME' | translate }}</div>
+      <div class="copy">
+        © {{ year }} Giorgia Project. · {{ 'Footer.RIGHTS' | translate }}
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <a href="#">{{ 'Footer.PRIVACY' | translate }}</a>
+      <a href="#">{{ 'Footer.TERMS' | translate }}</a>
+      <a href="#">{{ 'Footer.COOKIES' | translate }}</a>
+      <a href="#">{{ 'Footer.ABOUT' | translate }}</a>
+    </div>
+
+    <div class="footer-right">
+
+      <div class="lang-switch">
+        <button mat-button (click)="setLang('it')" [class.active]="currentLang === 'it'">IT</button>
+        <button mat-button (click)="setLang('en')" [class.active]="currentLang === 'en'">EN</button>
+      </div>
+
+      <div class="socials">
+        <a href="#"><i class="bi bi-github"></i></a>
+        <a href="#"><i class="bi bi-linkedin"></i></a>
+      </div>
+
+    </div>
+  </div>
+</footer>

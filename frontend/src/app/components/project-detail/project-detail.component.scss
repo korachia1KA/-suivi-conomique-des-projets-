@@ -1,0 +1,212 @@
+@use '../../../styles/variables.scss' as *;
+
+.dash {
+  min-height: 100svh;
+  background: $color-page-bg;
+  padding: 1.5rem;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  padding: 3rem 0;
+  color: $color-text-muted;
+}
+
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: color-mix(in srgb, $color-danger 8%, white);
+  border: 1px solid color-mix(in srgb, $color-danger 30%, white);
+  color: $color-danger;
+
+  mat-icon { color: $color-danger; }
+  div { flex: 1; }
+}
+
+.hero {
+  background: $color-surface;
+  border: 1px solid $color-border-subtle;
+  border-radius: 18px;
+  padding: 1.25rem 1.25rem 1.25rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: $color-primary;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $color-text-main;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+  }
+
+  p {
+    margin: .35rem 0 0;
+    color: $color-text-muted;
+  }
+}
+
+.status-pill {
+  font-size: .75rem;
+  font-weight: 700;
+  padding: .22rem .6rem;
+  border-radius: 999px;
+  background: $color-surface-muted;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+
+  &[data-status="IN_PROGRESS"] { background: color-mix(in srgb, $color-primary 12%, white); color: $color-primary; }
+  &[data-status="PLANNING"]    { background: rgba(0,0,0,0.05); color: $color-text-muted; }
+  &[data-status="COMPLETED"]   { background: color-mix(in srgb, $color-success 12%, white); color: $color-success; }
+}
+
+.crit-badge {
+  font-size: .75rem;
+  font-weight: 800;
+  padding: .22rem .6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, $color-danger 12%, white);
+  color: $color-danger;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  animation: crit-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes crit-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+  50%      { box-shadow: 0 0 0 6px rgba(211, 47, 47, .15); }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.kpi {
+  background: $color-surface;
+  border: 1px solid $color-border-subtle;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+
+  .kpi-label {
+    font-size: .75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: $color-text-muted;
+    margin-bottom: .35rem;
+  }
+
+  .kpi-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: $color-primary;
+  }
+
+  &[data-margin="ok"]   .kpi-value { color: $color-success; }
+  &[data-margin="warn"] .kpi-value { color: $color-warning; }
+  &[data-margin="ko"]   .kpi-value { color: $color-danger; }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 1rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cardx {
+  background: $color-surface;
+  border: 1px solid $color-border-subtle;
+  border-radius: 18px;
+  padding: 1.25rem;
+}
+
+.cardx-head {
+  margin-bottom: .75rem;
+
+  h2 { margin: 0; font-size: 1.1rem; font-weight: 800; color: $color-text-main; }
+  .muted { margin: .2rem 0 0; color: $color-text-muted; font-size: .85rem; }
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: .8rem 0;
+    border-bottom: 1px solid $color-border-subtle;
+
+    &:last-child { border-bottom: none; }
+
+    .title { font-weight: 700; color: $color-text-body; }
+    .sub   { color: $color-text-soft; font-size: .82rem; margin-top: .15rem; }
+
+    &.empty { color: $color-text-muted; justify-content: center; padding: 1.5rem 0; }
+  }
+}
+
+.cost-pill {
+  font-weight: 800;
+  color: $color-primary;
+  background: color-mix(in srgb, $color-primary 8%, white);
+  border: 1px solid color-mix(in srgb, $color-primary 18%, white);
+  padding: .22rem .65rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  white-space: nowrap;
+}
+
+.extra-form {
+  display: grid;
+  gap: .75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed $color-border-subtle;
+
+  h3 { margin: 0 0 .25rem; font-size: .95rem; color: $color-text-main; }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+  }
+}
+
+.w-100 { width: 100%; }

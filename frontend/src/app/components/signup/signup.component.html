@@ -1,0 +1,113 @@
+<div class="login-wrapper d-flex align-items-center justify-content-center">
+  <mat-card class="login-card shadow-lg">
+
+    <div class="lang-auth">
+      <button mat-button type="button" (click)="setLang('it')" [class.active]="currentLang === 'it'">IT</button>
+      <button mat-button type="button" (click)="setLang('en')" [class.active]="currentLang === 'en'">EN</button>
+    </div>
+
+    <mat-card-content>
+
+      @if (!isRegistered()) {
+
+        <div class="text-center brand-section mb-4">
+          <h1 class="fw-bold">{{ 'SIGNUP.TITLE' | translate }}</h1>
+          <p class="text-muted">{{ 'SIGNUP.SUBTITLE' | translate }}</p>
+        </div>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="d-grid gap-3">
+
+          <mat-form-field appearance="outline" class="w-100 password-field">
+            <mat-label>{{ 'SIGNUP.EMAIL' | translate }}</mat-label>
+            <input matInput type="email" formControlName="email" autocomplete="email" />
+
+            <mat-error>
+              @if (signupForm.get('email')?.hasError('required')) {
+                {{ 'SIGNUP.ERROR.EMAIL_REQUIRED' | translate }}
+              }
+              @if (signupForm.get('email')?.hasError('email')) {
+                {{ 'SIGNUP.ERROR.EMAIL_INVALID' | translate }}
+              }
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100 password-field" [class.pattern-error]="signupForm.get('password')?.hasError('pattern') && signupForm.get('password')?.touched">
+            <mat-label>{{ 'SIGNUP.PASSWORD' | translate }}</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="new-password"
+            />
+
+            <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+
+            @if (signupForm.get('password')?.hasError('required')) {
+              <mat-error>{{ 'SIGNUP.ERROR.PASSWORD_REQUIRED' | translate }}</mat-error>
+            }
+
+            @if (signupForm.get('password')?.hasError('pattern') && signupForm.get('password')?.touched) {
+              <mat-error>{{ 'SIGNUP.ERROR.PASSWORD_PATTERN' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>{{ 'SIGNUP.CONFIRM_PASSWORD' | translate }}</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+            />
+
+            @if (signupForm.get('confirmPassword')?.touched && signupForm.hasError('passwordMismatch')) {
+              <mat-error>{{ 'SIGNUP.ERROR.PASSWORD_MISMATCH' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="d-flex justify-content-start mb-2">
+            <span class="required-hint">* {{ 'SIGNUP.REQUIRED_FIELDS' | translate }}</span>
+          </div>
+
+          <button mat-raised-button color="primary" class="btn-login" type="submit" [disabled]="signupForm.invalid || loading()">
+            @if (loading()) {
+              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+            } @else {
+              <span>{{ 'SIGNUP.SUBMIT' | translate }}</span>
+            }
+          </button>
+
+          @if (errorMessage()) {
+            <div class="error-alert" role="alert">
+              <mat-icon class="me-2">error_outline</mat-icon>
+              <div>{{ errorMessage() }}</div>
+            </div>
+          }
+
+        </form>
+
+        <div id="link_footer" class="text-center mt-4 small d-flex flex-column align-items-center">
+          <div>
+            <span class="text-muted">{{ 'SIGNUP.ALREADY_HAVE_ACCOUNT' | translate }} </span>
+            <a class="link" routerLink="/auth/login">
+              {{ 'SIGNUP.BACK_TO_LOGIN' | translate }}
+            </a>
+          </div>
+        </div>
+
+      } @else {
+        <div class="text-center p-4">
+          <h2 class="text-success mb-3">{{ 'SIGNUP.SUCCESS.TITLE' | translate }}</h2>
+          <p class="text-muted">{{ 'SIGNUP.SUCCESS.MESSAGE' | translate }}</p>
+          <div><strong class="text-dark">{{ signupForm.get('email')?.value }}</strong></div>
+
+          <button mat-raised-button color="primary" class="btn-login mt-4 w-100" routerLink="/auth/login">
+            {{ 'SIGNUP.BACK_TO_LOGIN' | translate }}
+          </button>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

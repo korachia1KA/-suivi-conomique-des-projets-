@@ -1,0 +1,133 @@
+@use '../../../styles/variables.scss' as *;
+
+.footer {
+  background: $color-surface;
+  border-top: 1px solid $color-border-subtle;
+  padding: 1.2rem 1rem;
+  font-size: 0.85rem;
+  color: $color-text-muted;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+div.brand,
+div.copy {
+  padding-left: 30px !important;
+}
+
+.footer-left .brand {
+  font-weight: 700;
+  color: $color-text-main;
+}
+
+.footer-left .copy {
+  font-size: 0.8rem;
+  color: $color-text-soft;
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+
+  a {
+    color: $color-text-muted;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      color: $color-primary;
+      text-decoration: underline;
+    }
+  }
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+}
+
+.footer-left,
+.footer-links,
+.footer-right {
+  flex: 1 1 0;
+}
+
+.footer-left {
+  justify-content: flex-start;
+}
+
+.footer-links {
+  justify-content: center;
+}
+
+.footer-right {
+  justify-content: flex-end;
+}
+
+.lang-switch {
+  display: flex;
+  border: 1px solid $color-border-subtle;
+  border-radius: 999px;
+  padding: 2px;
+  background: $color-surface-muted;
+
+  button {
+    font-size: 0.75rem;
+    border-radius: 999px !important;
+    min-width: 36px;
+    color: $color-text-muted;
+
+    &.active {
+      background: $color-primary !important;
+      color: white !important;
+    }
+  }
+}
+
+.socials a {
+  color: $color-text-muted;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  div.brand,
+  div.copy{
+    padding-left: 0 !important;
+  }
+
+   .footer-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+   .lang-switch {
+    margin: 0 auto;
+  }
+
+  .footer-links {
+    justify-content: center;
+  }
+}
+
+.footer-inner.container-fluid {
+  padding-left: 0!important;
+  padding-right: 0 !important;
+  max-width: 100%;
+}

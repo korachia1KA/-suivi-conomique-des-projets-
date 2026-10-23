@@ -1,0 +1,317 @@
+@use '../../../../styles/variables.scss' as *;
+@use 'sass:color';
+
+.dash {
+  min-height: 100svh;
+  background: $color-page-bg;
+  padding: 1.75rem;
+}
+
+.page-container {
+  width: 100%;
+  max-width: none; 
+  margin: 0 auto;
+}
+
+.error-alert {
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: $color-danger;
+  border: 1px solid $color-danger;
+  background: color-mix(in srgb, $color-danger 6%, transparent);
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.hero {
+  background: $color-surface;
+  border: 1px solid $color-border-subtle;
+  border-radius: 18px;
+  padding: 1.25rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background: $color-primary;
+  }
+
+  h1 {
+    margin: 0;
+    font-weight: 700;
+    color: $color-text-main;
+    font-size: 1.6rem;
+  }
+
+  p {
+    color: $color-text-muted;
+    margin: 0;
+  }
+}
+
+.hero-main {
+  min-width: 0;
+}
+
+.hero-project-count {
+  margin-top: 0.28rem;
+  color: $color-text-muted;
+  font-size: 0.84rem;
+  line-height: 1.2;
+
+  strong {
+    color: $color-text-main;
+    font-weight: 800;
+  }
+}
+
+.hero-totals {
+  min-width: 560px;
+  width: min(760px, 100%);
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.hero-totals-grid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.hero-total-item {
+  border: 1px solid $color-border-subtle;
+  border-radius: 12px;
+  background: $color-surface;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.hero-total-item .label {
+  color: $color-text-muted;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.hero-total-item .value {
+  color: $color-primary;
+  font-weight: 900;
+  font-size: 1.2rem;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.hero-total-item.margin[data-margin="ok"] .value { color: $color-success; }
+.hero-total-item.margin[data-margin="warn"] .value { color: $color-warning; }
+.hero-total-item.margin[data-margin="ko"] .value { color: $color-danger; }
+
+.add-project-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
+
+  mat-icon {
+    margin: 0 !important;
+    color: $color-white !important;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.filter-bar {
+  margin: 1rem 0;
+  border-radius: 18px;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface;
+  padding: .6rem .75rem;
+  width: 100%;
+}
+
+.filter-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+}
+
+.add-btn {
+  width: fit-content;
+  height: 44px;
+  border-radius: 14px;
+  background: $color-primary !important;
+  color: $color-white !important;
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.064em;
+  padding-right: 14px;
+
+  mat-icon {
+    color: $color-white !important;
+  }
+  &:disabled {
+    background-color: color.adjust($color-primary, $lightness: 25%) !important;
+    border-radius: 14px;
+  }
+
+  &:hover {
+    background: $color-primary-hover !important;
+    border-radius: 14px;
+  }
+}
+
+.search-box {
+  width: 100%;
+  height: 44px;
+  flex: 1;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  background: $color-surface-muted;
+  border: 1px solid $color-border-subtle;
+  border-radius: 14px;
+  padding: 0 .75rem;
+
+  transition: border 160ms ease, box-shadow 160ms ease;
+
+  &:hover {
+    background: $color-surface-hover;
+    .search-icon {
+      color: $color-primary;
+    }
+    input::placeholder {
+      color: $color-primary;
+    }
+  }
+ 
+  &:focus-within {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 2px $color-surface-selected;
+    .search-icon {
+      color: $color-primary;
+    }
+     input::placeholder {
+      color: $color-primary;
+    }
+  }
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: .95rem;
+    color: $color-text-body;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+  }
+}
+
+.search-icon {
+  color: $color-text-muted;
+  font-size: 20px;
+   height: 20px;
+}
+
+.clear-btn {
+
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  mat-icon {
+    font-size: 20px;
+    color: $color-text-muted;
+    margin-top: 4.5px;
+
+  }
+
+  &:hover mat-icon {
+    color: $color-primary !important; 
+  }
+}
+
+.filter-btn {
+  width: fit-content;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid $color-border-subtle;
+  background: $color-surface-muted;
+  color: $color-text-muted;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  
+  &:hover {
+    background: $color-surface-hover;
+    color: $color-primary;
+  }
+}
+
+:host ::ng-deep .filter-btn .mat-mdc-button-persistent-ripple::before,
+:host ::ng-deep .filter-btn .mdc-button__ripple::before,
+:host ::ng-deep .filter-btn .mdc-button__ripple::after {
+  background-color: transparent !important;
+}
+
+@media (max-width: 900px) {
+  .btn-label {
+    display: none;
+  }
+
+  .filter-btn,
+  .add-btn {
+    width: 44px;
+  }
+
+  .filter-inner {
+    gap: 0.75rem;
+  }
+}

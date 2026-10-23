@@ -1,0 +1,24 @@
+<div class="app-shell" [class.auth]="hideNavbar">
+  @if(!hideNavbar){
+    <app-navbar></app-navbar>
+  }
+
+  <main class="main" [class.auth]="hideNavbar">
+    <router-outlet></router-outlet>
+  </main>
+
+  @if(!hideNavbar){
+    <app-footer></app-footer>
+  }
+
+  @if (showBackToTop()) {
+    <button
+      mat-fab
+      class="back-to-top"
+      [style.bottom.px]="backToTopBottom()"
+      (click)="scrollToTop()"
+      aria-label="Torna su">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
+  }
+</div>

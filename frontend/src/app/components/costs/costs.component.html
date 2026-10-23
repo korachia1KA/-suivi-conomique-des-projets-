@@ -1,0 +1,133 @@
+<div class="dash">
+  <div class="page-container">
+
+    <!-- HERO -->
+    <div class="hero mb-4">
+      <div class="hero-main">
+        <h1 class="mb-1">{{ 'COSTS.TITLE' | translate }}</h1>
+        <p class="mb-0">{{ 'COSTS.SUBTITLE' | translate }}</p>
+      </div>
+
+      <div class="hero-totals">
+        <div class="hero-totals-grid">
+          <div class="hero-total-item">
+            <div class="label">{{ 'COSTS.REVENUE' | translate }}</div>
+            <div class="value">{{ totalRevenue() | number:'1.2-2':pipeLocale }} €</div>
+          </div>
+          <div class="hero-total-item">
+            <div class="label">{{ 'COSTS.LABOR' | translate }}</div>
+            <div class="value">{{ totalLabor() | number:'1.2-2':pipeLocale }} €</div>
+          </div>
+          <div class="hero-total-item">
+            <div class="label">{{ 'COSTS.EXTRA' | translate }}</div>
+            <div class="value">{{ totalExtra() | number:'1.2-2':pipeLocale }} €</div>
+          </div>
+          <div class="hero-total-item margin"
+               [attr.data-margin]="marginClass(globalMargin())">
+            <div class="label">{{ 'COSTS.MARGIN' | translate }}</div>
+            <div class="value">
+              {{ globalMargin() != null ? (globalMargin()! | number:'1.2-2':pipeLocale) + ' %' : '-' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <mat-card class="filter-bar">
+      <div class="filter-inner">
+        <mat-form-field appearance="outline" class="filter-input">
+          <mat-label>{{ 'COSTS.SEARCH' | translate }}</mat-label>
+          <input matInput [ngModel]="q()" (ngModelChange)="q.set($event); onFilterChange()" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        @if (isAdmin()) {
+          <mat-form-field appearance="outline" class="filter-input">
+            <mat-label>{{ 'COSTS.BU' | translate }}</mat-label>
+            <mat-select [ngModel]="buId()" (ngModelChange)="buId.set($event); onFilterChange()">
+              <mat-option value="">{{ 'PROJECT.FILTER.ALL' | translate }}</mat-option>
+              @for (bu of businessUnits(); track bu.id) {
+                <mat-option [value]="bu.id">{{ bu.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" class="filter-input">
+          <mat-label>{{ 'COSTS.STATUS' | translate }}</mat-label>
+          <mat-select [ngModel]="status()" (ngModelChange)="status.set($event); onFilterChange()">
+            @for (s of statusOptions; track s.value) {
+              <mat-option [value]="s.value">{{ s.labelKey | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-stroked-button class="btn-soft" (click)="resetFilters()">
+          {{ 'COSTS.RESET' | translate }}
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- TABLE -->
+    <mat-card class="table-card">
+      @if (loading()) {
+        <div class="loading">
+          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+          <span>{{ 'COMMON.LOADING' | translate }}</span>
+        </div>
+      } @else if (errorKey()) {
+        <div class="error-alert">
+          <mat-icon>error_outline</mat-icon>
+          <div>{{ errorKey()! | translate }}</div>
+        </div>
+      } @else if (rows().length === 0) {
+        <div class="empty">{{ 'COSTS.EMPTY' | translate }}</div>
+      } @else {
+        <div class="table-wrap">
+          <table class="costs-table">
+            <thead>
+              <tr>
+                <th>{{ 'COSTS.COLS.PROJECT' | translate }}</th>
+                <th>{{ 'COSTS.COLS.BU' | translate }}</th>
+                <th>{{ 'COSTS.COLS.STATUS' | translate }}</th>
+                <th class="text-end">{{ 'COSTS.REVENUE' | translate }}</th>
+                <th class="text-end">{{ 'COSTS.LABOR' | translate }}</th>
+                <th class="text-end">{{ 'COSTS.EXTRA' | translate }}</th>
+                <th class="text-end">{{ 'COSTS.TOTAL_COST' | translate }}</th>
+                <th class="text-end">{{ 'COSTS.MARGIN' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of rows(); track r.idProject) {
+                <tr class="clickable-row" [routerLink]="['/projects', r.idProject]">
+                  <td>
+                    <a [routerLink]="['/projects', r.idProject]" class="proj-link">
+                      {{ r.projectName }}
+                    </a>
+                  </td>
+                  <td>{{ r.businessUnitName || '-' }}</td>
+                  <td>
+                    <span class="status-pill" [attr.data-status]="r.statusName?.toUpperCase()">
+                      {{ r.statusName || '-' }}
+                    </span>
+                  </td>
+                  <td class="text-end">{{ (r.estimatedRevenue ?? 0) | number:'1.2-2':pipeLocale }} €</td>
+                  <td class="text-end">{{ (r.laborCost ?? 0) | number:'1.2-2':pipeLocale }} €</td>
+                  <td class="text-end">{{ (r.extraCost ?? 0) | number:'1.2-2':pipeLocale }} €</td>
+                  <td class="text-end"><strong>{{ (r.totalCost ?? 0) | number:'1.2-2':pipeLocale }} €</strong></td>
+                  <td class="text-end">
+                    <span class="margin-val" [attr.data-margin]="marginClass(r.marginPct)">
+                      {{ r.marginPct != null ? (r.marginPct | number:'1.2-2':pipeLocale) + ' %' : '-' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card>
+
+  </div>
+</div>

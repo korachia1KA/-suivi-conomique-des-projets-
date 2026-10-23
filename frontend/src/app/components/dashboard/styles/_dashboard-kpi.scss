@@ -1,0 +1,85 @@
+@use '../../../../styles/variables.scss' as *;
+@use 'dashboard-mixins' as dashboardMixins;
+
+.kpi {
+  @include dashboardMixins.surface-base;
+  padding: 20px;
+
+  .kpi-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .6rem;
+    gap: .6rem;
+  }
+
+  .kpi-label { color: $color-text-muted; font-size: .9rem; }
+  .kpi-value { color: $color-primary; font-weight: 800; font-size: 1.9rem; }
+  .kpi-sub   { color: $color-text-soft; font-size: 14px; margin-top: .2rem; }
+}
+
+.kpi-stack.compact .kpi {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.65rem;
+
+  .kpi-top { margin-bottom: 0; }
+  .kpi-label {
+    color: $color-text-muted;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .kpi-value {
+    color: $color-primary;
+    font-size: 1.35rem;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: .02em;
+  }
+  .kpi-sub { font-size: 14px; }
+}
+
+.kpi-stack.compact .kpi.kpi-ok .kpi-value { color: $color-success; }
+.kpi-stack.compact .kpi.kpi-warning .kpi-value { color: $color-warning; }
+.kpi-stack.compact .kpi.kpi-danger .kpi-value { color: $color-danger; }
+
+.kpi-stack.compact .pill {
+  font-size: 0.68rem;
+  padding: 0.16rem 0.42rem;
+}
+
+.pill {
+  font-size: .75rem;
+  padding: .22rem .5rem;
+  border-radius: 999px;
+  background: $color-surface-selected;
+  color: $color-primary;
+  border: 1px solid $color-surface-selected;
+  white-space: nowrap;
+}
+
+.status-pill.ok {
+  background: color-mix(in srgb, $color-success 12%, transparent);
+  color: $color-success;
+  border-color: color-mix(in srgb, $color-success 18%, transparent);
+}
+
+.status-pill.warning {
+  background: color-mix(in srgb, $color-warning 12%, transparent);
+  color: $color-warning;
+  border-color: color-mix(in srgb, $color-warning 18%, transparent);
+}
+
+.status-pill.danger {
+  background: color-mix(in srgb, $color-danger 10%, transparent);
+  color: $color-danger;
+  border-color: color-mix(in srgb, $color-danger 16%, transparent);
+}
+
+.kpi-ok .kpi-value { color: $color-success; }
+.kpi-warning .kpi-value { color: $color-warning; }
+.kpi-danger .kpi-value { color: $color-danger; }

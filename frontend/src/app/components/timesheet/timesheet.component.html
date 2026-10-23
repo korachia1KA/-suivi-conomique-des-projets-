@@ -1,0 +1,114 @@
+<div class="dash">
+  <div class="page-container">
+
+    <div class="hero mb-4">
+      <div>
+        <h1 class="mb-1">{{ 'TIMESHEET.TITLE' | translate }}</h1>
+        <p class="mb-0">{{ 'TIMESHEET.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+
+    <mat-card class="filter-bar mb-3">
+      <div class="filter-inner">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ 'TIMESHEET.PROJECT_ID' | translate }}</mat-label>
+          <input matInput [value]="projectId()"
+                 (change)="loadProject($any($event.target).value)"
+                 [placeholder]="'TIMESHEET.PROJECT_ID_PLACEHOLDER' | translate" />
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    @if (errorKey()) {
+      <div class="error-alert mb-3" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <div>{{ errorKey()! | translate }}</div>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="loading">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>{{ 'COMMON.LOADING' | translate }}</span>
+      </div>
+    } @else if (projectId()) {
+      <mat-card class="cardx mb-3">
+        <div class="cardx-head">
+          <h2>{{ 'TIMESHEET.ENTRIES' | translate }}</h2>
+        </div>
+
+        <ul class="rows">
+          @for (e of entries(); track e.idUser + '_' + e.date) {
+            <li>
+              <div class="left">
+                <div class="title">{{ e.fullName || e.idUser }}</div>
+                <div class="sub">
+                  {{ e.date | date:'MMMM yyyy' }} ·
+                  {{ e.hoursWorked != null ? (e.hoursWorked | number:'1.0-2':pipeLocale) + 'h' : '-' }} ·
+                  {{ e.hourlyCost != null ? (e.hourlyCost | number:'1.2-2':pipeLocale) + ' €/h' : '-' }}
+                </div>
+              </div>
+              <div class="right">
+                <span class="cost-pill">
+                  {{ (e.cost ?? 0) | number:'1.2-2':pipeLocale }} €
+                </span>
+                @if (isAdminOrManager()) {
+                  <button mat-icon-button class="btn-trash"
+                          (click)="deleteEntry(e.idUser, e.date)"
+                          [disabled]="deletingKey() === (e.idUser + '_' + e.date)"
+                          [attr.aria-label]="'TIMESHEET.DELETE' | translate">
+                    @if (deletingKey() === (e.idUser + '_' + e.date)) {
+                      <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                    } @else {
+                      <mat-icon>delete</mat-icon>
+                    }
+                  </button>
+                }
+              </div>
+            </li>
+          } @empty {
+            <li class="empty">{{ 'TIMESHEET.EMPTY' | translate }}</li>
+          }
+        </ul>
+      </mat-card>
+
+      <mat-card class="cardx">
+        <div class="cardx-head">
+          <h2>{{ 'TIMESHEET.ADD' | translate }}</h2>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'TIMESHEET.MONTH' | translate }}</mat-label>
+            <input matInput [matDatepicker]="monthPicker" formControlName="month" />
+            <mat-datepicker-toggle matSuffix [for]="monthPicker"></mat-datepicker-toggle>
+            <mat-datepicker #monthPicker startView="multi-year"></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'TIMESHEET.HOURS' | translate }}</mat-label>
+            <input matInput type="number" step="0.5" min="0" formControlName="hoursWorked" />
+            <span matSuffix>h</span>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit"
+                  [disabled]="saving() || form.invalid">
+            @if (saving()) {
+              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+            } @else {
+              {{ 'TIMESHEET.SAVE' | translate }}
+            }
+          </button>
+        </form>
+      </mat-card>
+    } @else {
+      <div class="empty-state">
+        <mat-icon>schedule</mat-icon>
+        <p>{{ 'TIMESHEET.NO_PROJECT' | translate }}</p>
+        <a mat-raised-button color="primary" routerLink="/projects">
+          {{ 'PROJECT.BACK_TO_LIST' | translate }}
+        </a>
+      </div>
+    }
+  </div>
+</div>

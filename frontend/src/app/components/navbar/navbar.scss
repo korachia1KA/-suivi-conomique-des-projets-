@@ -1,0 +1,236 @@
+@use '../../../styles/variables.scss' as *;
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: $color-surface;
+  border-bottom: 1px solid rgba($color-border-strong, 0.7);
+}
+
+.navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: $color-primary;
+}
+.navbar-inner {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 20px;
+    padding-right: 20px;
+}
+
+.brand {
+  text-decoration: none;
+  color: $color-text-main;
+
+  .brand-mark {
+    width: 13px;
+    height: 13px;
+    border-radius: 4px;
+    background: $color-primary;
+    box-shadow: 0 8px 18px rgba(15, 76, 92, 0.25);
+    margin-right: 2px;
+  }
+
+  .brand-name {
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: $color-primary;
+  }
+
+  .brand-sub {
+    color: $color-text-muted;
+    font-weight: 500;
+  }
+}
+
+.nav-links a[mat-button] {
+  color: $color-text-body;
+  border-radius: 12px;
+  margin: 0 2px;
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+
+  &.active {
+    color: $color-primary;
+    background: $color-surface-selected;
+  }
+}
+
+.icon-btn {
+  position: relative;
+  border-radius: 12px;
+  transition: background-color 160ms ease;
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+
+  mat-icon {
+    color: $color-text-muted;
+    transition: color 180ms ease, filter 180ms ease;
+  }
+
+  .notif-dot {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-success;
+    box-shadow: 0 0 0 3px $color-surface;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+  }
+}
+
+.icon-btn.icon-btn-highlight {
+  mat-icon {
+    color: $color-success;
+    filter: drop-shadow(0 0 6px rgba(46, 125, 50, 0.55));
+  }
+
+  .notif-dot {
+    opacity: 1;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3px $color-surface, 0 0 8px rgba(46, 125, 50, 0.55);
+    animation: notif-pulse-green 1s ease-in-out infinite;
+  }
+}
+
+@keyframes notif-pulse-green {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.user-btn {
+  border-radius: 14px;
+  padding: 6px 10px;
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: $color-surface-selected;
+    color: $color-primary;
+    font-weight: 700;
+  }
+
+  .user-name {
+    margin: 0 6px;
+    font-weight: 600;
+    color: $color-text-body;
+  }
+
+  .chev {
+    color: $color-text-muted;
+  }
+}
+.user-inline {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+:host ::ng-deep {
+  .user-btn .mat-mdc-button-persistent-ripple::before,
+  .icon-btn .mat-mdc-button-persistent-ripple::before {
+    opacity: 0 !important;
+  }
+
+  .user-btn .mdc-button__ripple::before,
+  .user-btn .mdc-button__ripple::after,
+  .icon-btn .mdc-button__ripple::before,
+  .icon-btn .mdc-button__ripple::after {
+    opacity: 0 !important;
+  }
+
+  .user-btn .mat-focus-indicator::before,
+  .icon-btn .mat-focus-indicator::before {
+    opacity: 0 !important;
+  }
+}
+
+.mobile-menu-btn {
+  border-radius: 12px;
+
+  &:hover {
+    background: $color-surface-hover;
+  }
+
+  mat-icon {
+    color: $color-text-muted;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .navbar {
+    height: 64px;
+  }
+  .navbar-inner {
+    height: 64px;
+  }
+
+  .brand .brand-sub {
+    display: none !important;
+  }
+}
+/* Notification badge */
+.notif-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.cdk-overlay-pane .mat-mdc-menu-panel.notif-menu {
+  max-width: none !important;
+  width: auto !important;
+}
+/* Red pulse for critical projects */
+.icon-btn.icon-btn-critical {
+  mat-icon {
+    color: #d32f2f;
+    filter: drop-shadow(0 0 6px rgba(211, 47, 47, 0.55));
+  }
+
+  .notif-badge {
+    background: #b71c1c !important;
+    animation: notif-pulse-red 1s ease-in-out infinite;
+  }
+}
+
+@keyframes notif-pulse-red {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 3px #fff, 0 0 8px rgba(211, 47, 47, 0.55); }
+  50%  { transform: scale(1.2);  box-shadow: 0 0 0 3px #fff, 0 0 12px rgba(211, 47, 47, 0.9); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 3px #fff, 0 0 8px rgba(211, 47, 47, 0.55); }
+}

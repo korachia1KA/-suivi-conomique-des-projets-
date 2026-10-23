@@ -1,0 +1,37 @@
+@use '../styles/variables.scss' as *;
+.app-shell {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+}
+
+.app-shell.auth {
+  min-height: 100svh;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  z-index: 1100;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 50%;
+  box-shadow: 0 10px 24px $color-shadow;
+}
+
+@media (max-width: 768px) {
+  .back-to-top {
+    right: 14px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+  }
+}

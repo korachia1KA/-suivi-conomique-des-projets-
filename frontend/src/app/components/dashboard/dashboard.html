@@ -1,0 +1,427 @@
+﻿<div class="dash">
+  @if (loading()) {
+    <div class="hero mb-4">
+      <div>
+        <h1 class="mb-1">{{ 'HOME.LOADING_TITLE' | translate }}</h1>
+        <p class="mb-0">{{ 'HOME.LOADING_SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+  } @else {
+    @if (dashboard(); as d) {
+
+      <!-- HERO -->
+      <div class="hero mb-4">
+        <div>
+          <h1 class="mb-1">
+            {{ 'HOME.HERO_TITLE' | translate:{ name: (userService.currentUser()?.firstName || ('Navbar.USER_PLACEHOLDER' | translate)) } }}
+          </h1>
+          <p class="mb-0">
+            {{ isAdmin ? ('HOME.HERO_SUBTITLE_ADMIN' | translate) : ('HOME.HERO_SUBTITLE_MANAGER' | translate) }}
+          </p>
+        </div>
+      </div>
+
+      <!-- TOP GRID: PERFORMANCE LEFT + TOTALS RIGHT -->
+      <section class="top-grid mb-4" [class.manager-top-grid]="isManager && showManagerDeadlineColumn">
+        <div class="performance-col" [class.performance-col-manager]="isManager">
+
+          <!-- CHART CARD -->
+          <mat-card class="cardx chart-card">
+            <div class="cardx-head mb-2">
+              <div>
+                <h2>{{ 'HOME.CHART.TITLE' | translate }}</h2>
+                <p class="muted">
+                  {{ isManager ? ('HOME.CHART.SUBTITLE_MANAGER' | translate) : ('HOME.CHART.SUBTITLE' | translate) }}
+                </p>
+              </div>
+            </div>
+
+            <div class="chart-layout" [class.manager-chart-layout]="isManager">
+
+              <!-- TOP PROJECTS -->
+              <div class="hist-block hist-full">
+                <div class="group-title">{{ 'HOME.CHART.TOP_PROJECTS_MARGIN' | translate }}</div>
+                <ul class="hist-list">
+                  @for (item of topProjectsByMargin; track item.label) {
+                    <li>
+                      <div class="hist-head">
+                        <span class="name">{{ item.label }}</span>
+                        <span class="val">{{ item.margin | number:'1.2-2': pipeLocale }}%</span>
+                      </div>
+                      <div class="hist-track"><span [style.width.%]="item.norm"></span></div>
+                    </li>
+                  } @empty {
+                    <li class="empty">{{ 'HOME.EMPTY.NO_PROJECTS' | translate }}</li>
+                  }
+                </ul>
+              </div>
+
+              @if (!isManager) {
+                <div class="hist-block hist-full">
+                  <div class="group-title">{{ 'HOME.CHART.TOP_BU_MARGIN' | translate }}</div>
+                  <ul class="hist-list">
+                    @for (item of topBuByMargin; track item.label) {
+                      <li>
+                        <div class="hist-head">
+                          <span class="name">{{ item.label }}</span>
+                          <span class="val">{{ item.margin | number:'1.2-2': pipeLocale }}%</span>
+                        </div>
+                        <div class="hist-track"><span [style.width.%]="item.norm"></span></div>
+                      </li>
+                    } @empty {
+                      <li class="empty">{{ 'HOME.EMPTY.NO_BU' | translate }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <div class="pie-block">
+                <div class="group-title">{{ 'HOME.CHART.PROJECTS_GROUP' | translate }}</div>
+                <div class="pie-wrap pie-wrap-callout" [class.manager-pie]="isManager">
+                  <div class="pie-chart">
+                    <div class="pie-ring" [style.background]="projectMarginPieBackground"></div>
+                  </div>
+                  <ul class="pie-list pie-list-side">
+                    <li>
+                      <span class="name"><i class="legend-dot ok"></i>{{ 'HOME.MARGIN.OK' | translate }}</span>
+                      <span class="val">
+                        <span class="count-part">{{ projectOkCount }}</span>
+                        <span class="pct-part">{{ toPct(projectOkCount, projectTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                      </span>
+                    </li>
+                    <li>
+                      <span class="name"><i class="legend-dot warn"></i>{{ 'HOME.MARGIN.BORDERLINE' | translate }}</span>
+                      <span class="val">
+                        <span class="count-part">{{ projectWarnCount }}</span>
+                        <span class="pct-part">{{ toPct(projectWarnCount, projectTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                      </span>
+                    </li>
+                    <li>
+                      <span class="name"><i class="legend-dot ko"></i>{{ 'HOME.MARGIN.CRITICAL' | translate }}</span>
+                      <span class="val">
+                        <span class="count-part">{{ projectKoCount }}</span>
+                        <span class="pct-part">{{ toPct(projectKoCount, projectTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              @if (!isManager) {
+                <div class="pie-block">
+                  <div class="group-title">{{ 'HOME.CHART.BU_GROUP' | translate }}</div>
+                  <div class="pie-wrap pie-wrap-callout">
+                    <div class="pie-chart">
+                      <div class="pie-ring" [style.background]="buMarginPieBackground"></div>
+                    </div>
+                    <ul class="pie-list pie-list-side">
+                      <li>
+                        <span class="name"><i class="legend-dot ok"></i>{{ 'HOME.MARGIN.OK' | translate }}</span>
+                        <span class="val">
+                          <span class="count-part">{{ buOkCount }}</span>
+                          <span class="pct-part">{{ toPct(buOkCount, buTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                        </span>
+                      </li>
+                      <li>
+                        <span class="name"><i class="legend-dot warn"></i>{{ 'HOME.MARGIN.BORDERLINE' | translate }}</span>
+                        <span class="val">
+                          <span class="count-part">{{ buWarnCount }}</span>
+                          <span class="pct-part">{{ toPct(buWarnCount, buTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                        </span>
+                      </li>
+                      <li>
+                        <span class="name"><i class="legend-dot ko"></i>{{ 'HOME.MARGIN.CRITICAL' | translate }}</span>
+                        <span class="val">
+                          <span class="count-part">{{ buKoCount }}</span>
+                          <span class="pct-part">{{ toPct(buKoCount, buTotalCount) | number:'1.0-0': pipeLocale }}%</span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              }
+            </div>
+          </mat-card>
+        </div>
+
+        <div class="totals-col" [class.totals-col-manager]="isManager">
+          <div class="kpi-stack compact">
+            <mat-card class="kpi">
+              <div class="kpi-value">{{ totalRevenueAmount | number:'1.2-2': pipeLocale }}€</div>
+              <div class="kpi-label">{{ 'HOME.KPI.TOTAL_REVENUE' | translate }}</div>
+            </mat-card>
+
+            <mat-card class="kpi kpi-cost">
+              <div class="kpi-value">{{ totalCostAmount | number:'1.2-2': pipeLocale }}€</div>
+              <div class="kpi-label">{{ 'HOME.KPI.TOTAL_COST' | translate }}</div>
+            </mat-card>
+
+            <mat-card class="kpi kpi-margin"
+              [class.kpi-ok]="marginStatus === 'ok'"
+              [class.kpi-warning]="marginStatus === 'warning'"
+              [class.kpi-danger]="marginStatus === 'danger'">
+              <div class="kpi-value">{{ averageMarginPct | number:'1.2-2': pipeLocale }}%</div>
+              <div class="kpi-label">{{ 'HOME.KPI.AVG_MARGIN' | translate }}</div>
+            </mat-card>
+          </div>
+
+          <mat-card class="cardx compare-card top-compare">
+            <div class="cardx-head">
+              <div>
+                <h2>{{ 'HOME.COMPARISON.TITLE' | translate }}</h2>
+                <p class="muted">{{ 'HOME.COMPARISON.SUBTITLE' | translate }}</p>
+              </div>
+            </div>
+
+            <ul class="compare-list">
+              @for (row of comparisonRows; track row.key) {
+                <li>
+                  <div class="meta">
+                    <div class="name-row">
+                      <div>
+                        <div class="name">
+                          {{
+                            row.key === 'revenue'
+                              ? ('HOME.COMPARISON.REVENUE' | translate)
+                              : (row.key === 'cost'
+                                  ? ('HOME.COMPARISON.COST' | translate)
+                                  : ('HOME.COMPARISON.MARGIN' | translate))
+                          }}
+                        </div>
+                        <div class="delta delta-under"
+                          [class.delta-neutral]="row.key === 'cost'"
+                          [attr.data-trend]="metricDeltaClass(row.expected, row.current, row.goodWhenLower)">
+                          {{ metricDelta(row.expected, row.current) > 0 ? '+' : '' }}
+                          {{ metricDelta(row.expected, row.current) | number:'1.2-2': pipeLocale }}{{ row.unit === 'currency' ? '€' : '%' }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grouped-bars">
+                    <div class="bar-row">
+                      <span class="bar-label">{{ 'HOME.COMPARISON.EXPECTED' | translate }}</span>
+                      <div class="bar-track">
+                        <span class="bar-fill expected" [style.width.%]="metricPosByKey(row.expected, row.key)"></span>
+                      </div>
+                      <span class="bar-value" [class.bar-value-muted]="row.key === 'cost'">
+                        {{ row.expected | number:'1.2-2': pipeLocale }}{{ row.unit === 'currency' ? '€' : '%' }}
+                      </span>
+                    </div>
+
+                    <div class="bar-row">
+                      <span class="bar-label">{{ 'HOME.COMPARISON.CURRENT' | translate }}</span>
+                      <div class="bar-track">
+                        <span class="bar-fill current" [style.width.%]="metricPosByKey(row.current, row.key)"></span>
+                      </div>
+                      <span class="bar-value" [class.bar-value-muted]="row.key === 'cost'">
+                        {{ row.current | number:'1.2-2': pipeLocale }}{{ row.unit === 'currency' ? '€' : '%' }}
+                      </span>
+                    </div>
+
+                    <div class="axis-row axis-row-5">
+                      @for (tick of axisTicksByKey(row.key); track tick) {
+                        <span>{{ axisTickLabel(tick, row.unit) }}</span>
+                      }
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
+          </mat-card>
+        </div>
+
+        @if (isManager && showManagerDeadlineColumn) {
+          <div class="manager-deadline-col">
+            <mat-card class="cardx manager-deadline-card">
+              <div class="cardx-head">
+                <div>
+                  <h2>{{ 'HOME.DEADLINES.TITLE' | translate }}</h2>
+                  <p class="muted">{{ 'HOME.DEADLINES.SUBTITLE' | translate }}</p>
+                </div>
+              </div>
+
+              <ul class="rows manager-deadline-rows">
+                @for (p of upcomingDeadlines; track p.id) {
+                  <li>
+                    <div class="left">
+                      <div class="title">{{ p.label }}</div>
+                      <div class="sub">
+                        {{ 'HOME.DEADLINES.PLANNED_END' | translate }}: {{ p.date | date:'dd/MM/yyyy' }}
+                      </div>
+                    </div>
+                    <div class="right">
+                      <span class="bu-margin-pill deadline-pill"
+                        [class.soon]="deadlinePillClass(p.days) === 'soon'"
+                        [class.warning]="deadlinePillClass(p.days) === 'warning'"
+                        [class.danger]="deadlinePillClass(p.days) === 'danger'">
+                        @if (deadlineMainLabel(p.days)) {
+                          <span class="deadline-pill-main">{{ deadlineMainLabel(p.days) }}</span>
+                        }
+                        <span class="deadline-pill-days">{{ deadlineDaysText(p.days) }}</span>
+                      </span>
+                    </div>
+                  </li>
+                } @empty {
+                  <li>{{ 'HOME.DEADLINES.EMPTY' | translate }}</li>
+                }
+              </ul>
+
+              <div class="deadline-legend muted">
+                <span class="legend-item"><i class="legend-dot ko"></i>{{ 'HOME.DEADLINES.OVERDUE' | translate }}: <b>{{ overdueCount }}</b></span>
+                <span class="legend-item"><i class="legend-dot soon"></i>{{ 'HOME.DEADLINES.DUE7' | translate }}: <b>{{ due7Count }}</b></span>
+                <span class="legend-item"><i class="legend-dot warn"></i>{{ 'HOME.DEADLINES.DUE30' | translate }}: <b>{{ due30Count }}</b></span>
+              </div>
+            </mat-card>
+          </div>
+        }
+      </section>
+
+      <section class="bottom-grid bottom-grid-3" [class.lower-section]="!isManager" [class.bottom-grid-2]="isManager">
+
+        @if (!isManager) {
+          <mat-card class="cardx">
+            <div class="cardx-head">
+              <div>
+                <h2>{{ 'HOME.SECTIONS.BU_TITLE' | translate }}</h2>
+                <p class="muted">
+                  {{ 'HOME.SECTIONS.BU_SUBTITLE_TOTAL' | translate:{ count: (d.businessUnits?.length ?? 0) } }}
+                </p>
+              </div>
+              <span class="link disabled-link">{{ 'HOME.COMMON.SEE_ALL' | translate }}</span>
+            </div>
+
+            <ul class="rows bu-rows">
+              @for (bu of businessUnitsForCard; track bu.id) {
+                <li>
+                  <div class="left">
+                    <div class="title">{{ bu.name }}</div>
+                    <div class="sub bu-meta">
+                      <span class="bu-meta-item">
+                        {{ 'HOME.SECTIONS.TOTAL_PROJECTS' | translate }}: {{ bu.totalProjects }}
+                      </span>
+                      <span class="bu-sep">|</span>
+                      <span class="bu-meta-item">
+                        {{ 'HOME.SECTIONS.BU_EMPLOYEES' | translate }}: {{ bu.totalEmployees }}
+                      </span>
+                      <span class="bu-sep">|</span>
+                      <span class="bu-meta-item">
+                        {{ 'HOME.SECTIONS.BU_MANAGER' | translate }}: {{ bu.managerName || '-' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="right">
+                    <span class="bu-margin-pill"
+                      [class.ok]="buMarginStatusValue(bu.currentAverageMargin) === 'ok'"
+                      [class.warning]="buMarginStatusValue(bu.currentAverageMargin) === 'warning'"
+                      [class.danger]="buMarginStatusValue(bu.currentAverageMargin) === 'danger'">
+                      {{ bu.currentAverageMargin != null ? (bu.currentAverageMargin | number:'1.2-2': pipeLocale) + '%' : '-' }}
+                    </span>
+                  </div>
+                </li>
+              } @empty {
+                <li>{{ 'HOME.EMPTY.NO_BU' | translate }}</li>
+              }
+            </ul>
+          </mat-card>
+        }
+
+        <mat-card class="cardx">
+          <div class="cardx-head">
+            <div>
+              <h2>{{ 'HOME.SECTIONS.PROJECTS_TITLE' | translate }}</h2>
+              <p class="muted">{{ 'HOME.SECTIONS.PROJECTS_LIST_SUBTITLE' | translate }}</p>
+            </div>
+            <a routerLink="/projects" class="link">{{ 'HOME.COMMON.SEE_ALL' | translate }}</a>
+          </div>
+
+          <ul class="rows">
+            @for (p of projectsForCard; track p.id) {
+              <li>
+                <div class="left">
+                  <div class="title">{{ p.name }}</div>
+                  <div class="sub project-breakdown">
+                    <span class="project-breakdown-item">
+                      {{ 'HOME.SECTIONS.STATUS' | translate }}: {{ projectStatusLabel(p.status) }}
+                    </span>
+                    @if (!isManager) {
+                      <span class="bu-sep">|</span>
+                      <span class="project-breakdown-item">
+                        {{ 'HOME.SECTIONS.BU' | translate }}: {{ projectBusinessUnit(p) }}
+                      </span>
+                    }
+                    <span class="bu-sep">|</span>
+                    <span class="project-breakdown-item">
+                      {{ 'HOME.DEADLINES.PLANNED_END' | translate }}:
+                      {{ p.endDate ? (p.endDate | date:'shortDate':undefined:pipeLocale) : '-' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="right">
+                  <span class="bu-margin-pill"
+                        [class.ok]="buMarginStatusValue(p.marginPct) === 'ok'"
+                        [class.warning]="buMarginStatusValue(p.marginPct) === 'warning'"
+                        [class.danger]="buMarginStatusValue(p.marginPct) === 'danger'">
+                    {{ p.marginPct != null ? ((p.marginPct | number:'1.2-2': pipeLocale) + '%') : '-' }}
+                  </span>
+                </div>
+              </li>
+            } @empty {
+              <li>{{ 'HOME.EMPTY.NO_PROJECTS' | translate }}</li>
+            }
+          </ul>
+        </mat-card>
+
+        <mat-card class="cardx">
+          <div class="cardx-head">
+            <div>
+              <h2>{{ 'HOME.SECTIONS.EMPLOYEES_TITLE' | translate }}</h2>
+              <p class="muted">{{ 'HOME.SECTIONS.EMPLOYEES_SUBTITLE' | translate }}</p>
+            </div>
+            <a routerLink="/employees" class="link">{{ 'HOME.COMMON.SEE_ALL' | translate }}</a>
+          </div>
+
+          <ul class="rows">
+            @for (item of employeesForCard; track $index) {
+              <li>
+                <div class="left">
+                  <div class="title">{{ employeeDisplayName(item) || 'Utente' }}</div>
+                  @if (isManagerEmployeeView) {
+                    <div class="sub employee-meta">
+                      <span class="meta-pair">{{ 'HOME.SECTIONS.EMAIL' | translate }}: {{ employeeEmail(item) }}</span>
+                      <span class="bu-sep">|</span>
+                      <span class="meta-pair seniority-pair">
+                        {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ item.seniorityLevel || '-' }}
+                      </span>
+                    </div>
+                  } @else {
+                    <div class="sub employee-meta">
+                      <span class="meta-pair">{{ 'HOME.SECTIONS.ROLE' | translate }}: {{ item.role || '-' }}</span>
+                      <span class="bu-sep">|</span>
+                      <span class="meta-pair">{{ 'HOME.SECTIONS.BU' | translate }}: {{ item.businessUnit || '-' }}</span>
+                      <span class="bu-sep">|</span>
+                      <span class="meta-pair seniority-pair">
+                        {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ item.seniorityLevel || '-' }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </li>
+            } @empty {
+              <li>{{ 'HOME.EMPTY.NO_EMPLOYEES' | translate }}</li>
+            }
+          </ul>
+        </mat-card>
+      </section>
+
+    } @else {
+      <div class="hero mb-4">
+        <div>
+          <h1 class="mb-1">{{ 'HOME.ERROR.TITLE' | translate }}</h1>
+          <p class="mb-0">{{ error() || ('HOME.ERROR.SUBTITLE' | translate) }}</p>
+        </div>
+      </div>
+    }
+  }
+</div>
