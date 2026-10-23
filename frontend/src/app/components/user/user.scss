@@ -1,172 +1,269 @@
-@use '../../../styles/auth-common' as auth;
 @use '../../../styles/variables.scss' as *;
 
-.dash {
-  min-height: 100svh;
-  background: $color-page-bg;
-  padding: 1.25rem;
-}
+// ============================================================
+// PROFILE PAGE
+// ============================================================
 
-.user-container {
-  max-width: 980px;
+.profile-page {
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 2rem 2rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.hero {
-  background: $color-surface;
-  border: 1px solid $color-border-subtle;
-  border-radius: 18px;
-  padding: 1.25rem 1.25rem;
+// ---------- HERO ----------
+
+.page-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%);
+  border-radius: 24px;
+  color: $color-white;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 20px 40px rgba(11, 37, 69, 0.2);
 
   &::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 6px;
-    background: $color-primary;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(247, 184, 1, 0.15) 0%, transparent 70%);
   }
 
-  h1 {
-    margin: 0;
-    font-weight: 700;
-    color: $color-text-main;
-    font-size: 1.6rem;
-    padding-bottom: 4px;
-  }
-
-  p {
-    color: $color-text-muted;
-    margin: 0;
-    line-height: 1.25;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent 0%, $color-accent 50%, transparent 100%);
   }
 }
 
-
-.hero-copy {
+.hero-content {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
-.edit-btn {
-  color: $color-text-muted;
-  background-color: $color-surface-muted !important; 
-  border: 1px solid $color-border-subtle !important;
-  width: 38px;
-  height: 38px;
-  border-radius: 50% !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 !important;
-  min-width: 0 !important;
-
-  &:hover {
-    color: $color-primary;
-    background: rgba($color-primary, 0.08) !important;
-  }
-  
-  mat-icon {
-    margin: 0 !important; 
-    line-height: 1;
-  }
+.hero-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $color-accent;
 }
 
-:host ::ng-deep {
-  .mat-mdc-form-field-suffix .mat-mdc-icon-button {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    width: 48px !important;
-    height: 48px !important;
-
-    .mat-mdc-button-touch-target {
-      display: none;
-    }
-
-    &:hover mat-icon {
-      color: $color-primary !important;
-    }
-  }
+.hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
-.mat-icon-button{
-    background-color: transparent !important; 
-    border: none !important;                 
-    margin-right: 5px;
+.hero-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  max-width: 500px;
 }
 
-mat-icon {
-    margin: 0 !important; 
-    color: $color-text-muted !important;
-    font-size: 24px;
+.hero-actions {
+  position: relative;
+  z-index: 1;
 }
+
+.hero-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 900;
+  color: $color-accent;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+// ---------- SECTIONS ----------
 
 .section-card {
-  border-radius: 16px;
-  border: 1px solid $color-border-subtle;
-  background: $color-surface;
-  padding: 1rem;
-  position: relative;
+  background: $color-white !important;
+  border: 1px solid $color-border-subtle !important;
+  border-radius: 20px !important;
+  box-shadow: 0 2px 12px rgba(11, 37, 69, 0.04) !important;
+  padding: 1.75rem !important;
 }
 
 .section-head {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-surface-muted;
+}
+
+.section-title-block {
+  display: flex;
   align-items: center;
-  margin-bottom: .75rem;
+  gap: 12px;
+  min-width: 0;
+
+  .section-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: $color-primary;
+    background: rgba(11, 37, 69, 0.06);
+    padding: 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    box-sizing: content-box;
+  }
 
   h2 {
-    margin: 0;
     font-size: 1.1rem;
     font-weight: 800;
     color: $color-text-main;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-size: 0.82rem;
+    color: $color-text-muted;
+    margin: 2px 0 0;
   }
 }
 
-input.mat-mdc-input-element {
-  line-height: 1.4 !important;
-  padding-top: 4px;
-  padding-bottom: 4px;
+.btn-edit {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px !important;
+  background: $color-surface-muted !important;
+  color: $color-text-body !important;
+  border: 1px solid $color-border-subtle !important;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+  &:hover {
+    background: rgba(11, 37, 69, 0.08) !important;
+    color: $color-primary !important;
+    border-color: $color-primary !important;
+  }
 }
 
-:host ::ng-deep {
-  @include auth.auth-form-field-shell;
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .btn-soft {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px !important;
+    border: 1px solid $color-border-subtle !important;
+    background: $color-white !important;
+    color: $color-text-body !important;
+    font-weight: 700;
+    font-size: 0.82rem;
+
+    &:hover { background: $color-surface-muted !important; }
+  }
+
+  .btn-primary {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%) !important;
+    color: $color-white !important;
+    font-weight: 700;
+    font-size: 0.82rem;
+    box-shadow: 0 4px 12px rgba(11, 37, 69, 0.22);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    &:hover:not(:disabled) { transform: translateY(-1px); }
+    &:disabled { background: rgba(11, 37, 69, 0.35) !important; box-shadow: none; }
+  }
 }
 
-.error-alert {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
+// ---------- FORMS ----------
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+// ---------- ERROR BANNER ----------
+
+.error-banner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: $color-danger-soft;
   color: $color-danger;
+  font-size: 0.9rem;
+  font-weight: 600;
 
   mat-icon {
-    color: $color-danger !important;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    color: $color-danger;
   }
 }
 
-@media (max-width: 768px) {
-  .hero {
+// ---------- RESPONSIVE ----------
+
+@media (max-width: 900px) {
+  .profile-page { padding: 1.5rem 1rem 3rem; }
+
+  .page-hero {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    padding: 2rem;
+
+    .hero-title { font-size: 1.6rem; }
+    .hero-avatar { align-self: flex-start; }
   }
 
-  .hero-actions {
-    width: 100%;
+  .section-head {
+    flex-direction: column;
+    align-items: stretch;
   }
+
+  .edit-actions { justify-content: flex-end; }
+}
+
+@media (max-width: 600px) {
+  .profile-page { padding: 1rem; gap: 1rem; }
+  .form-grid { grid-template-columns: 1fr; }
+  .span-2 { grid-column: auto; }
+  .section-card { padding: 1.25rem !important; }
 }

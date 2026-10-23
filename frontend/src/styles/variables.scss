@@ -1,32 +1,42 @@
-$color-primary: #0F4C5C;
-$color-primary-hover: #0B3C47;
+// ============================================================
+// SUIVIPROJET — Premium Corporate Theme
+// ============================================================
 
-$color-page-bg: #EEEEEE;
+// Brand
+$color-primary: #0B2545;         // Deep navy (brand)
+$color-primary-hover: #13315C;   // Slightly lighter navy
+$color-accent: #F7B801;          // Golden yellow (accent)
+$color-accent-hover: #E5A100;
+
+// Surfaces
+$color-page-bg: #F4F6FA;         // Soft ice
 $color-surface: #FFFFFF;
-$color-surface-muted: #F8F9FA;
+$color-surface-muted: #F8FAFD;
+$color-surface-hover: rgba(11, 37, 69, 0.05);
+$color-surface-selected: rgba(11, 37, 69, 0.10);
+$color-surface-contrast: #EEF2F8;
 
-$color-text-main: #333333;
-$color-text-body: #444444;
-$color-text-muted: #777777;
-$color-text-soft: #999999;
+// Borders
+$color-border-subtle: #E5EAF1;
+$color-border-strong: #C9D2DD;
 
-$color-border-subtle: #EEEEEE;
-$color-border-strong: #CCCCCC;
+// Text
+$color-text-main: #0B2545;
+$color-text-body: #1A2B45;
+$color-text-muted: #6B7A90;
+$color-text-soft: #95A1B4;
 
-$color-success: #2e7d32;
-$color-warning: #d9a400;
-$color-warning-soft: #fff4cc;
-$color-warning-border: #d9a400;
+// Semantic
+$color-success: #1B9C5A;
+$color-success-soft: #E4F6EC;
+$color-warning: #E0A800;
+$color-warning-soft: #FFF7DB;
+$color-danger: #C0392B;
+$color-danger-soft: #FBE7E5;
+$color-info: #246BFE;
 
-$color-danger: #d32f2f;
-$color-danger-soft: #fdecea;
-$color-danger-border: #f44336;
-
-$color-info: #0F4C5C;
-$color-surface-contrast: #f4f6f8;
-$color-surface-hover: rgba(15, 76, 92, 0.08);
-$color-surface-selected: rgba(15, 76, 92, 0.12);
-$color-shadow: rgba(0, 0, 0, 0.18);
+// Shadows
+$color-shadow: rgba(11, 37, 69, 0.12);
 
 $color-white: #FFFFFF;
 $color-black: #000000;

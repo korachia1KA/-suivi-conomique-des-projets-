@@ -1,10 +1,7 @@
 @use '../../../styles/auth-common' as auth;
 @use '../../../styles/variables.scss' as *;
-@use 'sass:color';
 
-.login-wrapper {
-  @include auth.auth-shell;
-}
+.login-wrapper { @include auth.auth-shell; }
 
 .login-card {
   @include auth.auth-card;
@@ -16,24 +13,22 @@
 
   &.success {
     border: 1px solid $color-success;
-    box-shadow: 0 4px 8px color-mix(in srgb, $color-success 90%, transparent) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35), 0 0 0 2px $color-success;
   }
 
   &.error {
     border: 1px solid $color-danger;
-    box-shadow: 0 4px 12px color-mix(in srgb, $color-danger 50%, transparent) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35), 0 0 0 2px $color-danger;
   }
 }
 
 .close-button {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 16px;
+  right: 16px;
   color: $color-text-muted;
 
-  &:hover {
-    color: $color-text-main;
-  }
+  &:hover { color: $color-text-main; }
 }
 
 mat-card-content {
@@ -47,19 +42,14 @@ mat-card-content {
   font-size: 72px;
   height: 72px;
   width: 72px;
+  margin-bottom: 1rem;
 
-  &.success {
-    color: $color-success;
-  }
-
-  &.error {
-    color: $color-danger;
-  }
+  &.success { color: $color-success; }
+  &.error   { color: $color-danger; }
 }
 
 h1 {
   @include auth.auth-title;
-  font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
@@ -67,21 +57,19 @@ p {
   color: $color-text-muted;
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
+
+  strong { color: $color-primary; }
 }
 
-.btn-login,
-.btn-signup {
-  ::ng-deep {
-    @include auth.auth-primary-button;
-    margin-top: 0;
-  }
+.btn-login ::ng-deep {
+  @include auth.auth-primary-button;
+  width: 100%;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.25s ease-out forwards;
-}
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mb-3 { margin-bottom: 1rem; }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+@media (max-width: 480px) {
+  mat-card-content { padding: 1.75rem 1.25rem; }
+  .close-button { top: 10px; right: 10px; }
 }

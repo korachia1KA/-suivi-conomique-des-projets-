@@ -1,110 +1,98 @@
 <div class="employees-page">
 
-  <!-- HERO -->
-  <div class="hero mb-4">
-    <div>
-      <h1 class="mb-1">{{ 'EMPLOYEES.TITLE' | translate }}</h1>
-      <p class="mb-0">
-        {{ (isManager ? 'EMPLOYEES.SUBTITLE_MANAGER' : 'EMPLOYEES.SUBTITLE_ADMIN') | translate }}
+  <!-- ================= HERO ================= -->
+  <section class="page-hero">
+    <div class="hero-content">
+      <span class="hero-eyebrow">Team</span>
+      <h1 class="hero-title">Employees</h1>
+      <p class="hero-subtitle">
+        Manage your organization's team members and their assignments.
       </p>
     </div>
-  </div>
-
-  <!-- CARD PRINCIPALE -->
-  <mat-card class="cardx">
-
-    <!-- HEADER + FILTRES -->
-    <div class="cardx-head employees-head">
-      <div>
-        <h2>{{ 'EMPLOYEES.LIST_TITLE' | translate }}</h2>
-        <p class="muted">
-          {{ 'EMPLOYEES.COUNT_LABEL' | translate:{ count: rawEmployees().length } }}
-        </p>
+    <div class="hero-actions">
+      <div class="hero-count">
+        <span class="count-label">Total</span>
+        <span class="count-value">{{ rawEmployees().length }}</span>
       </div>
     </div>
+  </section>
 
-    <div class="filters-row">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>{{ 'EMPLOYEES.SEARCH' | translate }}</mat-label>
-        <input
-          matInput
-          [ngModel]="search()"
-          (ngModelChange)="onSearch($event)"
-          [placeholder]="'EMPLOYEES.SEARCH_PLACEHOLDER' | translate"
-        />
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
+  <!-- ================= FILTERS ================= -->
+  <section class="toolbar">
+    <div class="toolbar-search">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        [ngModel]="search()"
+        (ngModelChange)="onSearch($event)"
+        placeholder="Search employees..." />
+    </div>
 
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>{{ 'EMPLOYEES.FILTER_BU' | translate }}</mat-label>
-        <select matNativeControl [ngModel]="buFilter()" (ngModelChange)="onBuFilter($event)">
-          <option value="">{{ 'EMPLOYEES.ALL' | translate }}</option>
+    <div class="toolbar-filters">
+      <mat-form-field appearance="outline" class="compact-field">
+        <mat-label>Business Unit</mat-label>
+        <mat-select [ngModel]="buFilter()" (ngModelChange)="onBuFilter($event)">
+          <mat-option value="">All</mat-option>
           @for (bu of uniqueBusinessUnits; track bu) {
-            <option [value]="bu">{{ bu }}</option>
+            <mat-option [value]="bu">{{ bu }}</mat-option>
           }
-        </select>
+        </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>{{ 'EMPLOYEES.FILTER_ROLE' | translate }}</mat-label>
-        <select matNativeControl [ngModel]="roleFilter()" (ngModelChange)="onRoleFilter($event)">
-          <option value="">{{ 'EMPLOYEES.ALL' | translate }}</option>
+      <mat-form-field appearance="outline" class="compact-field">
+        <mat-label>Role</mat-label>
+        <mat-select [ngModel]="roleFilter()" (ngModelChange)="onRoleFilter($event)">
+          <mat-option value="">All</mat-option>
           @for (r of uniqueRoles; track r) {
-            <option [value]="r">{{ r }}</option>
+            <mat-option [value]="r">{{ r }}</mat-option>
           }
-        </select>
+        </mat-select>
       </mat-form-field>
     </div>
+  </section>
 
-    <!-- CONTENU -->
-    @if (loading()) {
-      <div class="loading-row">
-        <span>{{ 'EMPLOYEES.LOADING' | translate }}</span>
-      </div>
-    } @else if (error()) {
-      <div class="empty">{{ error() }}</div>
-    } @else if (rawEmployees().length === 0) {
-      <div class="empty">{{ 'HOME.EMPTY.NO_EMPLOYEES' | translate }}</div>
-    } @else {
-      <ul class="rows employees-rows">
+  <!-- ================= LIST ================= -->
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+      <p>Loading employees...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <h2>Unable to load employees</h2>
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (rawEmployees().length === 0) {
+    <div class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h2>No employees found</h2>
+      <p>Try adjusting your filters or search query.</p>
+    </div>
+  } @else {
+    <mat-card class="premium-card table-card">
+      <ul class="employee-list">
         @for (item of rawEmployees(); track employeeId(item)) {
-          <li>
-            <div class="left">
-              <div class="title">{{ employeeDisplayName(item) }}</div>
+          <li class="employee-row">
+            <div class="employee-avatar">{{ (employeeDisplayName(item) || 'U')[0].toUpperCase() }}</div>
 
-              @if (isManager) {
-                <div class="sub employee-meta">
-                  <span class="meta-pair">
-                    {{ 'HOME.SECTIONS.EMAIL' | translate }}: {{ employeeEmail(item) }}
-                  </span>
-                  <span class="bu-sep">|</span>
-                  <span class="meta-pair">
-                    {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ employeeSeniority(item) }}
-                  </span>
-                </div>
-              } @else {
-                <div class="sub employee-meta">
-                  <span class="meta-pair">
-                    {{ 'HOME.SECTIONS.ROLE' | translate }}: {{ employeeRole(item) }}
-                  </span>
-                  <span class="bu-sep">|</span>
-                  <span class="meta-pair">
-                    {{ 'HOME.SECTIONS.BU' | translate }}: {{ employeeBU(item) }}
-                  </span>
-                  <span class="bu-sep">|</span>
-                  <span class="meta-pair">
-                    {{ 'HOME.SECTIONS.SENIORITY_LEVEL' | translate }}: {{ employeeSeniority(item) }}
-                  </span>
-                </div>
-              }
+            <div class="employee-main">
+              <div class="employee-name">{{ employeeDisplayName(item) }}</div>
+              <div class="employee-email">{{ employeeEmail(item) }}</div>
             </div>
 
-            <div class="right">
-              <span class="employee-email-pill">{{ employeeEmail(item) }}</span>
+            <div class="employee-meta">
+              @if (isManager) {
+                <span class="meta-pill role-pill">{{ employeeSeniority(item) }}</span>
+              } @else {
+                <span class="meta-pill role-pill">{{ employeeRole(item) }}</span>
+                <span class="meta-pill bu-pill">{{ employeeBU(item) }}</span>
+                <span class="meta-pill seniority-pill">{{ employeeSeniority(item) }}</span>
+              }
             </div>
           </li>
         }
       </ul>
-    }
-  </mat-card>
+    </mat-card>
+  }
 </div>

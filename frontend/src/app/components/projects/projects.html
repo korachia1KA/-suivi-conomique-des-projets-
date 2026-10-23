@@ -1,289 +1,231 @@
-﻿<div class="dash">
-  <div class="page-container">
+﻿<div class="projects-page">
 
-    <div class="hero mb-4">
-      <div class="hero-main">
-        <h1 class="mb-1">{{ 'PROJECT.TITLE' | translate }}</h1>
-        <p class="mb-0">{{ 'PROJECT.DESCRIPTION' | translate }}</p>
+  <!-- ================= HERO HEADER ================= -->
+  <section class="page-hero">
+    <div class="hero-content">
+      <span class="hero-eyebrow">Portfolio</span>
+      <h1 class="hero-title">Projects</h1>
+      <p class="hero-subtitle">
+        Manage and track all your organization's projects.
+      </p>
+    </div>
+    <div class="hero-actions">
+      @if (isAdminSig() || isManagerSig()) {
+        <button mat-flat-button class="btn-accent" routerLink="/projects/create">
+          <mat-icon>add</mat-icon> New Project
+        </button>
+      }
+    </div>
+  </section>
 
-        @if (totals$ | async; as t) {
-          <div class="hero-project-count">
-            {{ 'PROJECT.TOTALS.COUNT' | translate }}: <strong>{{ t.count }}</strong>
-          </div>
-        }
-      </div>
-
-      @if (totals$ | async; as t) {
-        <div class="hero-totals">
-          <div class="hero-totals-grid">
-            <div class="hero-total-item">
-              <div class="label">{{ 'PROJECT.TOTALS.REVENUE' | translate }}</div>
-              <div class="value">
-                @if (t.count === 0) { - } @else { {{ t.totalRevenue | number:'1.2-2': pipeLocale }}€ }
-              </div>
-            </div>
-
-            <div class="hero-total-item">
-              <div class="label">{{ 'PROJECT.TOTALS.COST' | translate }}</div>
-              <div class="value">
-                @if (t.count === 0) { - } @else { {{ t.totalCost | number:'1.2-2': pipeLocale }}€ }
-              </div>
-            </div>
-
-            <div class="hero-total-item margin" [attr.data-margin]="t.count === 0 ? null : (t.marginPct < 15 ? 'ko' : (t.marginPct < 25 ? 'warn' : 'ok'))">
-              <div class="label">{{ 'PROJECT.TOTALS.MARGIN' | translate }}</div>
-              <div class="value">
-                @if (t.count === 0) { - } @else { {{ t.marginPct | number:'1.2-2': pipeLocale }}% }
-              </div>
-            </div>
-          </div>
+  <!-- ================= SUMMARY STATS ================= -->
+  @if (totals$ | async; as t) {
+    <section class="summary-grid">
+      <mat-card class="summary-card">
+        <div class="summary-icon icon-blue">
+          <mat-icon>folder_open</mat-icon>
         </div>
+        <div class="summary-data">
+          <span class="summary-label">Total Projects</span>
+          <span class="summary-value">{{ t.count }}</span>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="summary-icon icon-green">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="summary-data">
+          <span class="summary-label">Total Revenue</span>
+          <span class="summary-value">{{ t.totalRevenue | number:'1.0-0': pipeLocale }} <span class="currency">€</span></span>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="summary-icon icon-red">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="summary-data">
+          <span class="summary-label">Total Cost</span>
+          <span class="summary-value">{{ t.totalCost | number:'1.0-0': pipeLocale }} <span class="currency">€</span></span>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card" [attr.data-status]="t.marginPct < 15 ? 'danger' : (t.marginPct < 25 ? 'warning' : 'ok')">
+        <div class="summary-icon icon-gold">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="summary-data">
+          <span class="summary-label">Avg. Margin</span>
+          <span class="summary-value">{{ t.marginPct | number:'1.1-1': pipeLocale }} <span class="currency">%</span></span>
+        </div>
+      </mat-card>
+    </section>
+  }
+
+  <!-- ================= TOOLBAR ================= -->
+  <section class="toolbar">
+    <div class="toolbar-search">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        [value]="searchDraftSig()"
+        (input)="onSearch($any($event.target).value)"
+        placeholder="Search projects..." />
+      @if (searchDraftSig()) {
+        <button mat-icon-button class="clear-btn" (click)="clearSearch()" aria-label="Clear">
+          <mat-icon>close</mat-icon>
+        </button>
       }
     </div>
 
-    <mat-card class="filter-bar">
-      <div class="filter-inner">
+    <div class="toolbar-actions">
+      <button mat-stroked-button class="toolbar-btn" [matMenuTriggerFor]="filtersMenu">
+        <mat-icon>tune</mat-icon> Filters
+      </button>
+    </div>
+  </section>
 
-        <button mat-icon-button class="filter-btn"
-                [matMenuTriggerFor]="filtersMenu"
-                #filtersTrigger="matMenuTrigger"
-                aria-label="Filter"
-                title="{{ 'PROJECT.FILTER.FILTER_BUTTON' | translate }}">
-          <mat-icon>filter_list</mat-icon>
-          <span class="btn-label">{{ 'PROJECT.FILTER.FILTER_BUTTON' | translate }}</span>
-        </button>
-
-        <mat-menu #filtersMenu="matMenu"
-                  class="filters-menu"
-                  [overlapTrigger]="false"
-                  xPosition="after"
-                  yPosition="below"
-                  (closed)="onFiltersMenuClosed()">
-
-          <div class="filters-panel" (click)="$event.stopPropagation()">
-            <button mat-icon-button type="button" class="filters-close"
-                    (click)="filtersTrigger.closeMenu()"
-                    aria-label="Chiudi filtri">
-              <mat-icon>close</mat-icon>
-            </button>
-
-            @if (isAdminSig()) {
-              <div class="f-row">
-                <div class="f-label">{{ 'PROJECT.FILTER.BU' | translate }}</div>
-
-                <mat-select class="f-control"
-                            [ngModel]="buDraftSig()"
-                            (ngModelChange)="onBuChange($event)">
-                  <mat-option value="">{{ 'PROJECT.FILTER.ALL' | translate }}</mat-option>
-
-                  @if (businessUnits$ | async; as bus) {
-                    @for (bu of bus; track bu.id) {
-                      <mat-option [value]="bu.id">{{ bu.name }}</mat-option>
-                    }
-                  }
-                </mat-select>
-              </div>
-            }
-
-            <div class="f-row">
-              <div class="f-label">{{ 'PROJECT.FILTER.STATUS' | translate }}</div>
-
-              <mat-select class="f-control"
-                          [ngModel]="statusDraftSig() || ''"
-                          (ngModelChange)="statusDraftSig.set($event ?? '')">
-                <mat-option value="">{{ 'PROJECT.FILTER.ALL' | translate }}</mat-option>
-                <mat-option value="PLANNING">{{ 'PROJECT.STATUS.PLANNED' | translate }}</mat-option>
-                <mat-option value="IN_PROGRESS">{{ 'PROJECT.STATUS.IN_PROGRESS' | translate }}</mat-option>
-                <mat-option value="COMPLETED">{{ 'PROJECT.STATUS.COMPLETED' | translate }}</mat-option>
-              </mat-select>
-            </div>
-
-            <div class="f-row">
-              <div class="f-label">{{ 'PROJECT.FILTER.MARGIN_BAND' | translate }}</div>
-              <div class="range-row">
-                <span class="range-val">{{ marginMinSig() }}%</span>
-
-                <mat-slider class="range-slider mat-primary" min="-40" max="100" step="1">
-                  <input matSliderStartThumb
-                         [ngModel]="marginMinSig()"
-                         (ngModelChange)="onMarginMinChange($event)">
-                  <input matSliderEndThumb
-                         [ngModel]="marginMaxSig()"
-                         (ngModelChange)="onMarginMaxChange($event)">
-                </mat-slider>
-
-                <span class="range-val">{{ marginMaxSig() }}%</span>
-              </div>
-            </div>
-
-            <div class="f-row two">
-              <div>
-                <div class="f-label">{{ 'PROJECT.FILTER.START_FROM' | translate }}</div>
-
-                <mat-form-field appearance="outline" class="w-100 date-control">
-                  <input matInput
-                         [matDatepicker]="startPicker"
-                         [value]="startFromDate"
-                         (dateChange)="onStartFromDateChange($event.value)" />
-                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                  <mat-datepicker #startPicker></mat-datepicker>
-                </mat-form-field>
-              </div>
-            </div>
-
-            <div class="f-actions">
-              <button class="btn-soft" (click)="resetFilters()">
-                {{ currentLang.startsWith('en') ? 'Reset' : 'Resetta' }}
-              </button>
-
-              <button class="btn-primary" (click)="applyFilters(); filtersTrigger.closeMenu()">
-                {{ currentLang.startsWith('en') ? 'Apply' : 'Applica' }}
-              </button>
-            </div>
-          </div>
-        </mat-menu>
-
-        <div class="search-box">
-          <mat-icon class="search-icon">search</mat-icon>
-
-          <input type="text"
-                 [value]="searchDraftSig()"
-                 (input)="onSearch($any($event.target).value)"
-                 placeholder="{{ 'PROJECT.FILTER.SEARCH' | translate }}" />
-
-          @if (searchDraftSig()) {
-            <button mat-icon-button class="clear-btn"
-                    (click)="clearSearch()"
-                    aria-label="Clear search">
-              <mat-icon>close</mat-icon>
-            </button>
-          }
-        </div>
-
-        @if (isAdminSig() || isManagerSig()) {
-          <button mat-icon-button class="btn-primary add-btn"
-                  routerLink="/projects/create"
-                  aria-label="Add project"
-                  title="{{ 'PROJECT.FILTER.ADD_PROJECT' | translate }}">
-            <mat-icon>add</mat-icon>
-            <span class="btn-label">{{ 'PROJECT.FILTER.ADD_PROJECT' | translate }}</span>
-          </button>
-        }
+  <!-- ================= FILTERS MENU ================= -->
+  <mat-menu #filtersMenu="matMenu" class="filters-menu" xPosition="before">
+    <div class="filters-panel" (click)="$event.stopPropagation()">
+      <div class="filters-header">
+        <h3>Filters</h3>
       </div>
-    </mat-card>
 
-    <mat-card class="table-card p-0">
-      <div class="table-wrap">
-        <table mat-table
-               matSort
-               [class.no-bu-table]="!isAdminSig()"
-               [matSortActive]="sortSig().field"
-               [matSortDirection]="sortSig().dir"
-               [matSortDisableClear]="true"
-               (matSortChange)="onSortChange($event)"
-               [dataSource]="(projects$ | async) ?? []">
-
-          <!-- PROJECT NAME + link to /projects/{id} -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef class="col-project" mat-sort-header="name">
-              {{ 'PROJECT.COLS.PROJECT' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let p"
-                class="col-project"
-                [attr.data-status]="p.statusName?.toUpperCase()">
-              <div class="proj-cell"
-                   [attr.data-margin]="p.currentMargin == null ? 'ko' : (p.currentMargin < 15 ? 'ko' : (p.currentMargin < 25 ? 'warn' : 'ok'))">
-
-                <a class="cell-strong proj-link"
-                   [routerLink]="['/projects', p.idProject]"
-                   [title]="p.name">
-                  {{ p.name }}
-                </a>
-
-                @if (p.currentMargin != null && p.currentMargin < 15) {
-                  <mat-icon class="crit-icon" aria-hidden="true">warning</mat-icon>
-                }
-              </div>
-            </td>
-          </ng-container>
-
-          @if (isAdminSig()) {
-            <ng-container matColumnDef="bu">
-              <th mat-header-cell *matHeaderCellDef class="col-bu" mat-sort-header="bu">
-                {{ 'PROJECT.COLS.BU' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let p" class="col-bu">
-                {{ p.businessUnitName }}
-              </td>
-            </ng-container>
-          }
-
-          <ng-container matColumnDef="start">
-            <th mat-header-cell *matHeaderCellDef class="col-start" mat-sort-header="startDate">
-              {{ 'PROJECT.COLS.START' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let p" class="col-start">
-              {{ p.startDate | date:(currentLang === 'it' ? 'dd/MM/yyyy' : 'MM/dd/yyyy') : undefined : pipeLocale }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="end">
-            <th mat-header-cell *matHeaderCellDef class="col-end" mat-sort-header="endDate">
-              {{ 'PROJECT.COLS.END' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let p" class="col-end">
-              @if (p.endDate) {
-                {{ p.endDate | date:(currentLang === 'it' ? 'dd/MM/yyyy' : 'MM/dd/yyyy') : undefined : pipeLocale }}
-              } @else {
-                -
+      @if (isAdminSig()) {
+        <div class="f-row">
+          <label class="f-label">Business Unit</label>
+          <mat-select class="f-control" [ngModel]="buDraftSig()" (ngModelChange)="onBuChange($event)">
+            <mat-option value="">All</mat-option>
+            @if (businessUnits$ | async; as bus) {
+              @for (bu of bus; track bu.id) {
+                <mat-option [value]="bu.id">{{ bu.name }}</mat-option>
               }
-            </td>
-          </ng-container>
+            }
+          </mat-select>
+        </div>
+      }
 
-          <ng-container matColumnDef="revenue">
-            <th mat-header-cell *matHeaderCellDef class="col-revenue text-end" mat-sort-header="currentRevenue">
-              {{ 'PROJECT.TOTALS.REVENUE' | translate }} €
-            </th>
-            <td mat-cell *matCellDef="let p" class="col-revenue text-end">
-              {{ p.currentRevenue | number:'1.2-2': pipeLocale }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="cost">
-            <th mat-header-cell *matHeaderCellDef class="col-cost text-end" mat-sort-header="currentCost">
-              {{ 'PROJECT.TOTALS.COST' | translate }} €
-            </th>
-            <td mat-cell *matCellDef="let p" class="col-cost text-end">
-              {{ p.currentCost | number:'1.2-2': pipeLocale }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="margin">
-            <th mat-header-cell *matHeaderCellDef class="col-margin text-end" mat-sort-header="currentMargin">
-              {{ 'PROJECT.TOTALS.MARGIN' | translate }} %
-            </th>
-            <td mat-cell *matCellDef="let p" class="text-end">
-              <span class="margin-val"
-                    [attr.data-margin]="p.currentMargin == null ? 'ko' : (p.currentMargin < 15 ? 'ko' : (p.currentMargin < 25 ? 'warn' : 'ok'))">
-                {{ (p.currentMargin ?? 0) | number:'1.2-2': pipeLocale }}
-              </span>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-              class="clickable-row"
-              [routerLink]="['/projects', row.idProject]"></tr>
-        </table>
+      <div class="f-row">
+        <label class="f-label">Status</label>
+        <mat-select class="f-control" [ngModel]="statusDraftSig() || ''" (ngModelChange)="statusDraftSig.set($event ?? '')">
+          <mat-option value="">All</mat-option>
+          <mat-option value="PLANNING">Planning</mat-option>
+          <mat-option value="IN_PROGRESS">In Progress</mat-option>
+          <mat-option value="COMPLETED">Completed</mat-option>
+        </mat-select>
       </div>
 
-      <mat-paginator
-        [length]="totalSig()"
-        [pageIndex]="pageSig()"
-        [pageSize]="sizeSig()"
-        [pageSizeOptions]="[5, 10, 20, 50]"
-        (page)="onPageChange($event)">
-      </mat-paginator>
-    </mat-card>
-  </div>
+      <div class="f-row">
+        <label class="f-label">Margin Range</label>
+        <div class="range-row">
+          <span class="range-val">{{ marginMinSig() }}%</span>
+          <mat-slider class="range-slider" min="-40" max="100" step="1">
+            <input matSliderStartThumb [ngModel]="marginMinSig()" (ngModelChange)="onMarginMinChange($event)">
+            <input matSliderEndThumb [ngModel]="marginMaxSig()" (ngModelChange)="onMarginMaxChange($event)">
+          </mat-slider>
+          <span class="range-val">{{ marginMaxSig() }}%</span>
+        </div>
+      </div>
+
+      <div class="f-row">
+        <label class="f-label">Started After</label>
+        <mat-form-field appearance="outline" class="w-100">
+          <input matInput [matDatepicker]="startPicker" [value]="startFromDate" (dateChange)="onStartFromDateChange($event.value)" />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="f-actions">
+        <button mat-stroked-button (click)="resetFilters()">Reset</button>
+        <button mat-flat-button class="btn-primary" (click)="applyFilters()">Apply</button>
+      </div>
+    </div>
+  </mat-menu>
+
+  <!-- ================= TABLE ================= -->
+  <mat-card class="table-card">
+    <div class="table-wrap">
+      <table mat-table
+             matSort
+             [matSortActive]="sortSig().field"
+             [matSortDirection]="sortSig().dir"
+             [matSortDisableClear]="true"
+             (matSortChange)="onSortChange($event)"
+             [dataSource]="(projects$ | async) ?? []">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef class="col-name" mat-sort-header="name">Project</th>
+          <td mat-cell *matCellDef="let p" class="col-name">
+            <div class="proj-cell">
+              <span class="proj-status-dot" [attr.data-status]="p.statusName?.toUpperCase()"></span>
+              <a class="proj-link" [routerLink]="['/projects', p.idProject]">{{ p.name }}</a>
+            </div>
+          </td>
+        </ng-container>
+
+        @if (isAdminSig()) {
+          <ng-container matColumnDef="bu">
+            <th mat-header-cell *matHeaderCellDef class="col-bu" mat-sort-header="bu">Business Unit</th>
+            <td mat-cell *matCellDef="let p" class="col-bu">
+              <span class="pill-bu">{{ p.businessUnitName || '-' }}</span>
+            </td>
+          </ng-container>
+        }
+
+        <ng-container matColumnDef="start">
+          <th mat-header-cell *matHeaderCellDef class="col-date" mat-sort-header="startDate">Start</th>
+          <td mat-cell *matCellDef="let p" class="col-date">
+            {{ p.startDate | date:'dd MMM yyyy' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="end">
+          <th mat-header-cell *matHeaderCellDef class="col-date" mat-sort-header="endDate">End</th>
+          <td mat-cell *matCellDef="let p" class="col-date">
+            {{ p.endDate ? (p.endDate | date:'dd MMM yyyy') : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="revenue">
+          <th mat-header-cell *matHeaderCellDef class="col-num" mat-sort-header="currentRevenue">Revenue</th>
+          <td mat-cell *matCellDef="let p" class="col-num">
+            <strong class="num-pos">{{ p.currentRevenue | number:'1.0-0': pipeLocale }} €</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="cost">
+          <th mat-header-cell *matHeaderCellDef class="col-num" mat-sort-header="currentCost">Cost</th>
+          <td mat-cell *matCellDef="let p" class="col-num">
+            <span class="num-neg">{{ p.currentCost | number:'1.0-0': pipeLocale }} €</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="margin">
+          <th mat-header-cell *matHeaderCellDef class="col-num" mat-sort-header="currentMargin">Margin</th>
+          <td mat-cell *matCellDef="let p" class="col-num">
+            <span class="badge-margin" [attr.data-status]="p.currentMargin == null ? 'none' : (p.currentMargin < 15 ? 'ko' : (p.currentMargin < 25 ? 'warn' : 'ok'))">
+              {{ (p.currentMargin ?? 0) | number:'1.1-1': pipeLocale }}%
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            class="clickable-row"
+            [routerLink]="['/projects', row.idProject]"></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      [length]="totalSig()"
+      [pageIndex]="pageSig()"
+      [pageSize]="sizeSig()"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </mat-card>
+
 </div>

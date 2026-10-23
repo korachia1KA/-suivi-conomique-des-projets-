@@ -10,8 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';        // ← AJOUTÉ
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // ← AJOUTÉ
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 import { EmployeeService } from '../../services/employee/employee';
@@ -23,8 +24,15 @@ import { EmployeeCard } from '../../models/employee.model';
   selector: 'app-employees',
   standalone: true,
   imports: [
-    MatCard, MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
-    FormsModule, DatePipe, TranslateModule,
+    MatCard,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,              // ← AJOUTÉ
+    MatProgressSpinnerModule,     // ← AJOUTÉ
+    FormsModule,
+    DatePipe,
   ],
   templateUrl: './employees.html',
   styleUrl: './employees.scss',
@@ -32,7 +40,6 @@ import { EmployeeCard } from '../../models/employee.model';
 export class EmployeesComponent implements OnInit {
   private employeeService = inject(EmployeeService);
   private authService     = inject(AuthService);
-  private translate       = inject(TranslateService);
   userService             = inject(UserService);
   private destroyRef      = inject(DestroyRef);
   private platformId      = inject(PLATFORM_ID);
@@ -44,7 +51,7 @@ export class EmployeesComponent implements OnInit {
   buFilter     = signal('');
   roleFilter   = signal('');
 
-  pipeLocale = this.mapLocale(this.translate.getCurrentLang());
+  pipeLocale = 'en-US';
   private search$ = new Subject<string>();
 
   get isManager(): boolean {
@@ -58,10 +65,6 @@ export class EmployeesComponent implements OnInit {
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) { this.loading.set(false); return; }
-
-    this.translate.onLangChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(e => (this.pipeLocale = this.mapLocale(e.lang)));
 
     this.search$
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
@@ -87,20 +90,21 @@ export class EmployeesComponent implements OnInit {
           console.error('Employees load error', err);
           if (err.status === 401) this.authService.logout();
           const msg = typeof err.error?.message === 'string' ? err.error.message : null;
-          this.error.set(msg || `Erreur chargement employés (${err.status || 0})`);
+          this.error.set(msg || `Error loading employees (${err.status || 0})`);
           this.loading.set(false);
         },
       });
   }
 
-  onSearch(v: string)   { this.search$.next(v ?? ''); }
-  onBuFilter(v: string) { this.buFilter.set(v ?? '');   this.loadEmployees(); }
+  onSearch(v: string)    { this.search$.next(v ?? ''); }
+  onBuFilter(v: string)  { this.buFilter.set(v ?? '');   this.loadEmployees(); }
   onRoleFilter(v: string){ this.roleFilter.set(v ?? ''); this.loadEmployees(); }
 
   // ---- Helpers ----
   employeeId(e: EmployeeCard): string {
     return String(e?.idUser ?? e?.id ?? this.employeeEmail(e));
   }
+
   employeeDisplayName(item: EmployeeCard): string {
     const direct = String(item?.name ?? '').trim();
     if (direct) return direct;
@@ -113,18 +117,22 @@ export class EmployeesComponent implements OnInit {
       const alias = email.split('@')[0]?.replace(/[._-]+/g, ' ').trim();
       if (alias) return alias.replace(/\b\w/g, c => c.toUpperCase());
     }
-    return this.translate.instant('EMPLOYEES.UNKNOWN') || 'Utilisateur';
+    return 'User';
   }
+
   employeeEmail(item: EmployeeCard): string {
     const raw = item as any;
     return String(item?.email ?? raw?.mail ?? raw?.userEmail ?? '').trim() || '-';
   }
+
   employeeRole(item: EmployeeCard): string {
     return String(item?.role ?? '-').trim() || '-';
   }
+
   employeeBU(item: EmployeeCard): string {
     return String(item?.businessUnitName ?? item?.businessUnit ?? '-').trim() || '-';
   }
+
   employeeSeniority(item: EmployeeCard): string {
     return String(item?.seniorityLevel ?? '-').trim() || '-';
   }
@@ -137,6 +145,7 @@ export class EmployeesComponent implements OnInit {
     });
     return Array.from(s).sort();
   }
+
   get uniqueRoles(): string[] {
     const s = new Set<string>();
     this.rawEmployees().forEach(e => {
@@ -144,9 +153,5 @@ export class EmployeesComponent implements OnInit {
       if (v && v !== '-') s.add(v);
     });
     return Array.from(s).sort();
-  }
-
-  private mapLocale(lang: string | undefined) {
-    return (lang ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
   }
 }

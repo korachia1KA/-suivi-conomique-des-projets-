@@ -4,7 +4,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +13,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { ProjectsService } from '../../services/projects/projects';
 import { RealtimeService } from '../../services/realtime/realtime';
@@ -27,11 +25,10 @@ import { ProjectDetail } from '../../models/projectDetail.model';
   imports: [
     DatePipe, DecimalPipe,
     ReactiveFormsModule,
-    TranslateModule,
     MatCardModule, MatIconModule, MatButtonModule,
     MatFormFieldModule, MatInputModule,
     MatDatepickerModule, MatNativeDateModule,
-    MatProgressSpinnerModule, MatTooltipModule,
+    MatProgressSpinnerModule,
     RouterLink,
   ],
   templateUrl: './project-detail.component.html',
@@ -45,7 +42,6 @@ export class ProjectDetailComponent implements OnInit {
   private projectsService = inject(ProjectsService);
   private realtime = inject(RealtimeService);
   private authService = inject(AuthService);
-  private translate = inject(TranslateService);
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
 
@@ -54,9 +50,8 @@ export class ProjectDetailComponent implements OnInit {
   errorKey = signal<string | null>(null);
   savingExtra = signal(false);
   savingHours = signal(false);
-  deletingHours = signal<string | null>(null);
 
-  pipeLocale = this.mapLocale(this.translate.getCurrentLang());
+  pipeLocale = 'en-US';
   projectId = '';
 
   get p(): ProjectDetail {
@@ -74,7 +69,6 @@ export class ProjectDetailComponent implements OnInit {
     month: [this.firstOfCurrentMonth(), [Validators.required]],
     hoursWorked: [null as number | null, [Validators.required, Validators.min(0)]],
     hourlyCost: [null as number | null],
-    idUser: [null as string | null],
   });
 
   ngOnInit(): void {
@@ -88,10 +82,6 @@ export class ProjectDetailComponent implements OnInit {
       this.loading.set(false);
       return;
     }
-
-    this.translate.onLangChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(e => (this.pipeLocale = this.mapLocale(e.lang)));
 
     this.load();
 
@@ -126,14 +116,14 @@ export class ProjectDetailComponent implements OnInit {
           this.loading.set(false);
           if (err.status === 401) this.authService.logout();
           const code = typeof err.error?.message === 'string' ? err.error.message : 'LOAD';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          this.errorKey.set(code);
         },
       });
   }
 
   submitExtraCost(): void {
     if (this.extraForm.invalid || this.savingExtra() || !this.project()) return;
-    if (!this.authService.hasRole('ADMIN') && !this.authService.hasRole('MANAGER')) return;
+    if (!this.canManage()) return;
 
     this.savingExtra.set(true);
 
@@ -155,8 +145,8 @@ export class ProjectDetailComponent implements OnInit {
         },
         error: (err: HttpErrorResponse) => {
           this.savingExtra.set(false);
-          const code = typeof err.error?.message === 'string' ? err.error.message : 'CREATE';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          const code = typeof err.error?.message === 'string' ? err.error.message : 'Error';
+          this.errorKey.set(code);
         },
       });
   }
@@ -168,7 +158,6 @@ export class ProjectDetailComponent implements OnInit {
 
     const v = this.addHoursForm.value;
     const payload = {
-      idUser: v.idUser ?? null,
       date: this.toIsoDate(v.month ?? null)!,
       hoursWorked: Number(v.hoursWorked ?? 0),
       hourlyCost: v.hourlyCost != null ? Number(v.hourlyCost) : null,
@@ -179,44 +168,13 @@ export class ProjectDetailComponent implements OnInit {
       .subscribe({
         next: () => {
           this.savingHours.set(false);
-          this.addHoursForm.reset({
-            month: this.firstOfCurrentMonth(),
-            hoursWorked: null,
-            hourlyCost: null,
-            idUser: null,
-          });
+          this.addHoursForm.reset({ month: this.firstOfCurrentMonth(), hoursWorked: null, hourlyCost: null });
           this.load();
         },
         error: (err: HttpErrorResponse) => {
           this.savingHours.set(false);
-          const code = typeof err.error?.message === 'string' ? err.error.message : 'CREATE';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
-        },
-      });
-  }
-
-  deleteHours(idUser: string, date: string): void {
-    if (!this.authService.hasRole('ADMIN') && !this.authService.hasRole('MANAGER')) return;
-
-    const key = `${idUser}_${date}`;
-    if (this.deletingHours() === key) return;
-
-    const confirmMsg = this.translate.instant('PROJECT.HOURS.CONFIRM_DELETE') as string;
-    if (!confirm(confirmMsg)) return;
-
-    this.deletingHours.set(key);
-
-    this.projectsService.deleteHours(this.projectId, idUser, date)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.deletingHours.set(null);
-          this.load();
-        },
-        error: (err: HttpErrorResponse) => {
-          this.deletingHours.set(null);
-          const code = typeof err.error?.message === 'string' ? err.error.message : 'DELETE';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          const code = typeof err.error?.message === 'string' ? err.error.message : 'Error';
+          this.errorKey.set(code);
         },
       });
   }
@@ -243,9 +201,5 @@ export class ProjectDetailComponent implements OnInit {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
-  }
-
-  private mapLocale(lang: string | undefined) {
-    return (lang ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
   }
 }

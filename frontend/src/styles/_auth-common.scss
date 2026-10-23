@@ -3,30 +3,55 @@
 
 @mixin auth-shell {
   min-height: 100svh;
-  background-color: $color-page-bg;
+  background: linear-gradient(135deg, #0B2545 0%, #13315C 55%, #1B4470 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(247, 184, 1, 0.12), transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(247, 184, 1, 0.08), transparent 40%);
+    pointer-events: none;
+  }
 }
 
-@mixin auth-card($max-width: 420px) {
+@mixin auth-card($max-width: 440px) {
   position: relative;
   width: 100%;
   max-width: $max-width;
   background-color: $color-surface;
-  border-radius: 16px;
-  border: 1px solid $color-border-subtle;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $color-accent 0%, #FFD84D 50%, $color-accent 100%);
+  }
 }
 
 @mixin auth-content {
-  padding: 2rem 1.75rem;
+  padding: 2.5rem 2rem 2rem;
 }
 
 @mixin auth-title {
-  color: $color-text-main;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: $color-primary;
 }
 
 @mixin auth-muted-text {
@@ -34,40 +59,36 @@
 }
 
 @mixin auth-primary-button {
-  height: 48px;
-  border-radius: 8px;
-  font-weight: 600;
-  background-color: $color-primary !important;
+  height: 50px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%) !important;
   color: $color-white !important;
+  border: none !important;
+  box-shadow: 0 8px 22px rgba(11, 37, 69, 0.30);
+  transition: transform 140ms ease, box-shadow 140ms ease;
 
   &:hover {
-    background-color: $color-primary-hover !important;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(11, 37, 69, 0.40);
   }
 
   &:disabled {
-    background-color: color.adjust($color-primary, $lightness: 25%) !important;
+    background: color.adjust($color-primary, $lightness: 35%) !important;
+    box-shadow: none;
   }
-}
-
-@mixin auth-pill-switch {
-  display: flex;
-  gap: 4px;
-  background: $color-surface-muted;
-  backdrop-filter: blur(6px);
-  border: 1px solid $color-border-subtle;
-  border-radius: 999px;
-  padding: 3px;
 }
 
 @mixin auth-form-field-shell {
-  .mat-mdc-form-field {
-    width: 100%;
-  }
+  .mat-mdc-form-field { width: 100%; }
 
   .mdc-notched-outline__leading,
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {
-    border-color: $color-border-strong !important;
+    border-color: $color-border-subtle !important;
+    border-width: 1.5px !important;
   }
 
   .mat-mdc-form-field.mat-focused:not(.mat-form-field-invalid) {
@@ -75,20 +96,13 @@
     .mdc-notched-outline__notch,
     .mdc-notched-outline__trailing {
       border-color: $color-primary !important;
+      border-width: 2px !important;
     }
-
-    .mat-mdc-floating-label {
-      color: $color-primary !important;
-    }
-
-    input {
-      caret-color: $color-primary !important;
-    }
+    .mat-mdc-floating-label { color: $color-primary !important; }
+    input { caret-color: $color-primary !important; }
   }
 
-  .mat-mdc-floating-label {
-    color: $color-text-muted !important;
-  }
+  .mat-mdc-floating-label { color: $color-text-muted !important; }
 
   .mat-mdc-form-field.mat-form-field-invalid {
     .mdc-notched-outline__leading,
@@ -96,11 +110,8 @@
     .mdc-notched-outline__trailing {
       border-color: $color-danger !important;
     }
-
     .mat-mdc-floating-label,
-    .mat-mdc-form-field-error {
-      color: $color-danger !important;
-    }
+    .mat-mdc-form-field-error { color: $color-danger !important; }
   }
 
   .mat-mdc-form-field-subscript-wrapper {

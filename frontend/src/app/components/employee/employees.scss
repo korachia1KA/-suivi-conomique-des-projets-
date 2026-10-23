@@ -1,87 +1,335 @@
+@use '../../../styles/variables.scss' as *;
+
+// ============================================================
+// EMPLOYEES PAGE
+// ============================================================
+
 .employees-page {
-  padding: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem 2rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
 }
 
-.hero {
-  padding: 1.25rem 1.5rem;
-  background: #f5f7fa;
-  border-radius: 12px;
+// ---------- HERO ----------
 
-  h1 { margin: 0; font-size: 1.6rem; }
-  .mb-0 { margin: 0; color: #607089; }
-}
-
-.cardx {
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-}
-
-.cardx-head {
+.page-hero {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-
-  h2 { margin: 0 0 .25rem; font-size: 1.15rem; }
-  .muted { color: #78879c; font-size: .9rem; margin: 0; }
-}
-
-.filters-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
   align-items: center;
-  margin-bottom: 1rem;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%);
+  border-radius: 24px;
+  color: $color-white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(11, 37, 69, 0.2);
 
-  .search-field { flex: 1 1 260px; min-width: 220px; }
-  .filter-field { flex: 0 1 200px; }
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(247, 184, 1, 0.15) 0%, transparent 70%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent 0%, $color-accent 50%, transparent 100%);
+  }
 }
 
-.employees-rows {
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $color-accent;
+}
+
+.hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  max-width: 500px;
+}
+
+.hero-count {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.count-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.count-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: $color-accent;
+  line-height: 1;
+}
+
+// ---------- TOOLBAR ----------
+
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: $color-white;
+  border: 1px solid $color-border-subtle;
+  border-radius: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbar-search {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  background: $color-surface-muted;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: border-color 160ms ease, background 160ms ease;
+
+  &:focus-within {
+    border-color: $color-primary;
+    background: $color-white;
+  }
+
+  .search-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: $color-text-soft;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: $color-text-main;
+
+    &::placeholder { color: $color-text-soft; }
+  }
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 12px;
+}
+
+.compact-field {
+  min-width: 180px;
+  width: 180px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// ---------- STATES ----------
+
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: $color-text-muted;
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 1rem;
+    color: $color-text-soft;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $color-text-main;
+    margin: 0 0 0.5rem;
+  }
+
+  p { margin: 0; font-size: 0.95rem; }
+}
+
+// ---------- EMPLOYEE LIST ----------
+
+.premium-card {
+  background: $color-white !important;
+  border: 1px solid $color-border-subtle !important;
+  border-radius: 20px !important;
+  box-shadow: 0 2px 12px rgba(11, 37, 69, 0.04) !important;
+}
+
+.table-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.employee-list {
   list-style: none;
   margin: 0;
   padding: 0;
-
-  li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: .85rem 0;
-    border-bottom: 1px solid #eef1f5;
-
-    &:last-child { border-bottom: none; }
-  }
-
-  .left { min-width: 0; flex: 1; }
-  .title { font-weight: 600; color: #1f2937; }
-  .sub { color: #6b7788; font-size: .85rem; margin-top: .2rem; }
-
-  .employee-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .4rem;
-    .bu-sep { color: #c4cbd5; }
-  }
 }
 
-.employee-email-pill {
-  background: #eef3fb;
-  color: #2b6fd6;
-  padding: .25rem .7rem;
-  border-radius: 999px;
-  font-size: .8rem;
+.employee-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid $color-surface-muted;
+  transition: background 140ms ease;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $color-surface-hover; }
+}
+
+.employee-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%);
+  color: $color-accent;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(11, 37, 69, 0.2);
+}
+
+.employee-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.employee-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $color-text-main;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.loading-row,
-.empty {
-  padding: 2rem 0;
-  text-align: center;
-  color: #78879c;
+.employee-email {
+  font-size: 0.8rem;
+  color: $color-text-muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mb-4 { margin-bottom: 1rem; }
+.employee-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.role-pill      { background: rgba(36, 107, 254, 0.10); color: #246BFE; }
+  &.bu-pill        { background: $color-surface-muted; color: $color-text-body; }
+  &.seniority-pill { background: rgba(27, 156, 90, 0.10); color: $color-success; }
+}
+
+// ---------- RESPONSIVE ----------
+
+@media (max-width: 900px) {
+  .employees-page { padding: 1.5rem 1rem 3rem; gap: 1.5rem; }
+
+  .page-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem;
+
+    .hero-title { font-size: 1.6rem; }
+
+    .hero-count {
+      align-self: stretch;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+    }
+
+    .count-value { font-size: 1.6rem; }
+  }
+
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .compact-field { width: 100%; }
+  .toolbar-filters { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+  .employees-page { padding: 1rem; gap: 1rem; }
+
+  .employee-row {
+    flex-wrap: wrap;
+    padding: 1rem;
+  }
+
+  .employee-meta {
+    justify-content: flex-start;
+    width: 100%;
+    margin-left: 56px;
+  }
+}

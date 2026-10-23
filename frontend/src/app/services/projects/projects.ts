@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { ProjectRow } from '../../models/projectRow.model';
 import { TimesheetEntry } from '../../models/timesheet.model';
 import { PageResponse } from '../../models/pageResponse.model';
@@ -13,7 +15,9 @@ export class ProjectsService {
   private http = inject(HttpClient);
   private readonly API = `${environment.apiBaseUrl}/projects`;
 
-  // ---- Listing ----
+  // ============================================================
+  // LIST
+  // ============================================================
 
   list(
     q: string,
@@ -48,6 +52,10 @@ export class ProjectsService {
     return this.http.get<PageResponse<ProjectRow>>(this.API, { params });
   }
 
+  // ============================================================
+  // TOTALS
+  // ============================================================
+
   totals(
     q: string,
     sortField: string,
@@ -79,23 +87,46 @@ export class ProjectsService {
     );
   }
 
-  // ---- Create ----
+  // ============================================================
+  // CREATE
+  // ============================================================
 
   create(payload: CreateProjectPayload): Observable<unknown> {
     return this.http.post(`${this.API}/create`, payload);
   }
 
+  // ============================================================
+  // ASSIGNABLE USERS
+  // ============================================================
+
   getAssignableUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API}/assignable-users`);
   }
 
-  // ---- Detail ----
+  // ============================================================
+  // MY PROJECTS (for Timesheet dropdown)
+  // ============================================================
+
+  getMyProjects(): Observable<Array<{ id: string; name: string }>> {
+    return this.http.get<any[]>(`${this.API}/my-projects`).pipe(
+      map(rows => (rows ?? []).map(r => ({
+        id: String(r.userId ?? r.id ?? ''),
+        name: r.name ?? ''
+      })))
+    );
+  }
+
+  // ============================================================
+  // DETAIL
+  // ============================================================
 
   getDetail(idProject: string): Observable<ProjectDetail> {
     return this.http.get<ProjectDetail>(`${this.API}/${idProject}`);
   }
 
-  // ---- Extra costs ----
+  // ============================================================
+  // EXTRA COSTS
+  // ============================================================
 
   listExtraCosts(idProject: string): Observable<ExtraCost[]> {
     return this.http.get<ExtraCost[]>(`${this.API}/${idProject}/extra-costs`);
@@ -108,7 +139,9 @@ export class ProjectsService {
     return this.http.post<ExtraCost>(`${this.API}/${idProject}/extra-costs`, payload);
   }
 
-  // ---- Hours / timesheet ----
+  // ============================================================
+  // HOURS / TIMESHEET
+  // ============================================================
 
   listHours(idProject: string): Observable<TimesheetEntry[]> {
     return this.http.get<TimesheetEntry[]>(`${this.API}/${idProject}/hours`);

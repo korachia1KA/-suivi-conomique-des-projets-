@@ -1,266 +1,188 @@
-
 @use 'sass:color';
 @use 'sass:map';
 @use '@angular/material' as mat;
 @use 'styles/variables.scss' as *;
 
+// ==== MATERIAL PALETTE ====
+
 $app-primary-palette: (
-  50: $color-primary,
-  100: $color-primary,
-  200: $color-primary,
-  300: $color-primary,
-  400: $color-primary,
-  500: $color-primary,
-  600: $color-primary,
-  700: $color-primary,
-  800: $color-primary,
-  900: $color-primary,
-  contrast: (
-    50: white,
-    100: white,
-    200: white,
-    300: white,
-    400: white,
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  ),
+  50: #E7EBF2, 100: #C3CEDD, 200: #9BAEC5, 300: #728EAD, 400: #527599,
+  500: $color-primary, 600: #0A2340, 700: #081C36, 800: #06152A, 900: #030A18,
+  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #fff,
+             500: #fff, 600: #fff, 700: #fff, 800: #fff, 900: #fff),
 );
 
 $app-accent-palette: (
-  50: $color-primary-hover,
-  100: $color-primary-hover,
-  200: $color-primary-hover,
-  300: $color-primary-hover,
-  400: $color-primary-hover,
-  500: $color-primary-hover,
-  600: $color-primary-hover,
-  700: $color-primary-hover,
-  800: $color-primary-hover,
-  900: $color-primary-hover,
-  contrast: (
-    50: white,
-    100: white,
-    200: white,
-    300: white,
-    400: white,
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  ),
+  50: #FFF9E0, 100: #FFF0B3, 200: #FFE680, 300: #FFDC4D, 400: #FFD326,
+  500: $color-accent, 600: #E5A100, 700: #C28800, 800: #9E6E00, 900: #7A5500,
+  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #000,
+             500: #000, 600: #000, 700: #000, 800: #fff, 900: #fff),
 );
 
 $app-primary: mat.define-palette($app-primary-palette, 500, 100, 900);
-$app-accent: mat.define-palette($app-accent-palette, 500, 100, 900);
-$app-warn: mat.define-palette(mat.$red-palette, 600);
-
-$app-primary: map.merge(
-  $app-primary,
-  (500: $color-primary, 700: $color-primary, 900: $color-primary)
-);
-
-$app-accent: map.merge(
-  $app-accent,
-  (500: $color-primary-hover, 700: $color-primary-hover, 900: $color-primary-hover)
-);
+$app-accent:  mat.define-palette($app-accent-palette, 500, 100, 900);
+$app-warn:    mat.define-palette(mat.$red-palette, 600);
 
 $app-theme: mat.define-light-theme((
-  color: (
-    primary: $app-primary,
-    accent: $app-accent,
-    warn: $app-warn,
+  color: (primary: $app-primary, accent: $app-accent, warn: $app-warn),
+  typography: mat.define-typography-config(
+    $font-family: '"Inter", "Segoe UI", Roboto, Arial, sans-serif',
   ),
 ));
 
 @include mat.core();
 @include mat.all-component-themes($app-theme);
 
+// ==== BASE ====
+
 body {
   margin: 0;
   padding: 0;
-  background-color: $color-page-bg;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  background: $color-page-bg;
+  font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  color: $color-text-body;
+  -webkit-font-smoothing: antialiased;
 }
 
-.cdk-overlay-pane .mat-mdc-menu-panel.filters-menu {
-  border-radius: 16px !important;
-  border: 1px solid $color-border-subtle !important;
-  box-shadow: none !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
+h1, h2, h3, h4 {
+  font-family: 'Inter', 'Segoe UI', Roboto, Arial, sans-serif;
+  color: $color-text-main;
+  letter-spacing: -0.01em;
 }
 
-.cdk-overlay-pane .mat-mdc-menu-panel.filters-menu .mat-mdc-menu-content {
-  padding: 0 !important;
-  overflow: visible !important;
-}
-
-@media (min-width: 760px) {
-  .cdk-overlay-pane .mat-mdc-menu-panel.filters-menu {
-    max-width: none !important;
-    width: 600px !important;
-    min-width: 600px !important;
-    max-height: calc(100dvh - 220px) !important;
-  }
-}
-
-@media (max-width: 759.98px) {
-  .cdk-overlay-pane .mat-mdc-menu-panel.filters-menu {
-    width: 90vw !important;
-    min-width: auto !important;
-    max-width: 95vw !important;
-    max-height: min(46dvh, 360px) !important;
-    margin: 0 auto;
-  }
-
-  .filters-panel {
-    padding: 1.25rem !important;
-  }
-
-  .range-row {
-    gap: 0.5rem;
-  }
-}
-
-.mat-primary {
-  --mat-pseudo-checkbox-full-selected-icon-color: #{$color-primary};
-  --mat-pseudo-checkbox-full-selected-checkmark-color: #{$color-white};
-  --mat-pseudo-checkbox-full-unselected-icon-color: rgba(0, 0, 0, 0.54);
-  --mat-pseudo-checkbox-full-disabled-selected-checkmark-color: #{$color-white};
-  --mat-pseudo-checkbox-full-disabled-unselected-icon-color: color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);
-  --mat-pseudo-checkbox-full-disabled-selected-icon-color: color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);
-  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #{$color-primary};
-  --mat-pseudo-checkbox-minimal-disabled-selected-checkmark-color: color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);
-
-  --mat-slider-active-track-color: #{$color-primary};
-  --mat-slider-focus-handle-color: #{$color-primary};
-  --mat-slider-handle-color: #{$color-primary};
-  --mat-slider-hover-handle-color: #{$color-primary-hover};
-  --mat-slider-focus-state-layer-color: color-mix(in srgb, #{$color-primary} 12%, transparent);
-  --mat-slider-hover-state-layer-color: color-mix(in srgb, #{$color-primary} 4%, transparent);
-  --mat-slider-inactive-track-color: #{$color-primary};
-  --mat-slider-ripple-color: #{$color-primary};
-  --mat-slider-with-tick-marks-active-container-color: #{$color-white};
-  --mat-slider-with-tick-marks-inactive-container-color: #{$color-primary};
-}
-
-.mat-mdc-option .mat-pseudo-checkbox {
-  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #{$color-primary};
-}
-
-.cdk-overlay-container .mat-datepicker-content {
-  --mat-datepicker-calendar-date-selected-state-background-color: #{$color-primary} !important;
-  --mat-datepicker-calendar-date-today-state-outline-color: #{$color-primary} !important;
-  --mat-datepicker-calendar-date-selected-state-foreground-color: #{$color-white} !important;
-  --mat-datepicker-calendar-date-hover-state-background-color: color-mix(in srgb, #{$color-primary} 12%, transparent) !important;
-  --mat-datepicker-calendar-date-focus-state-background-color: color-mix(in srgb, #{$color-primary} 12%, transparent) !important;
-}
-
-.filters-panel .mat-mdc-form-field .mdc-notched-outline__leading,
-.filters-panel .mat-mdc-form-field .mdc-notched-outline__notch,
-.filters-panel .mat-mdc-form-field .mdc-notched-outline__trailing {
-  border-color: $color-border-subtle !important;
-  border-width: 1.5px !important;
-}
-
-.filters-panel .mat-mdc-form-field .mdc-notched-outline__leading {
-  border-radius: 14px 0 0 14px !important;
-}
-
-.filters-panel .mat-mdc-form-field .mdc-notched-outline__trailing {
-  border-radius: 0 14px 14px 0 !important;
-}
-
-.filters-panel .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-  background: $color-surface-muted !important;
-  border-radius: 14px !important;
-}
-
-.filters-panel .mat-mdc-icon-button {
-  background: transparent !important;
-}
-
-.filters-panel .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before,
-.filters-panel .mat-mdc-icon-button .mdc-button__ripple::before,
-.filters-panel .mat-mdc-icon-button .mdc-button__ripple::after {
-  background-color: transparent !important;
-  opacity: 0 !important;
-}
-
-.filters-panel .mat-mdc-form-field:hover .mdc-notched-outline__leading,
-.filters-panel .mat-mdc-form-field:hover .mdc-notched-outline__notch,
-.filters-panel .mat-mdc-form-field:hover .mdc-notched-outline__trailing,
-.filters-panel .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-.filters-panel .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-.filters-panel .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-  border-color: $color-primary !important;
-}
+// ==== BUTTONS PREMIUM ====
 
 .btn-primary {
-  height: 44px;
-  width: 100px;
-  border-radius: 14px;
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 12px;
   font-weight: 600;
-  letter-spacing: 0.064em;
-  background-color: $color-primary !important;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-hover 100%) !important;
   color: $color-white !important;
-  font-family: 'Segoe UI', Arial, sans-serif !important;
-  font-size: 0.9rem;
+  border: 1px solid rgba($color-primary, 0.8) !important;
+  box-shadow: 0 6px 18px rgba(11, 37, 69, 0.22);
+  transition: transform 140ms ease, box-shadow 140ms ease;
 
   &:hover {
-    background: $color-primary-hover !important;
-    border-radius: 14px;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(11, 37, 69, 0.30);
   }
 
   &:disabled {
-    background-color: color.adjust($color-primary, $lightness: 25%) !important;
-    border-radius: 14px;
+    background: color.adjust($color-primary, $lightness: 35%) !important;
+    box-shadow: none;
+  }
+}
+
+.btn-accent {
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, $color-accent 0%, $color-accent-hover 100%) !important;
+  color: $color-primary !important;
+  border: 1px solid rgba($color-accent-hover, 0.9) !important;
+  box-shadow: 0 6px 18px rgba(247, 184, 1, 0.35);
+  transition: transform 140ms ease, box-shadow 140ms ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(247, 184, 1, 0.45);
   }
 }
 
 .btn-soft {
-  border-radius: 14px !important;
-  height: 44px;
-  width: 100px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  border-color: color-mix(in srgb, #{$color-primary} 8%, transparent) !important;
-  color: $color-text-muted !important;
-  padding: 0 14px;
-  margin-right: 8px;
-  font-family: 'Segoe UI', Arial, sans-serif !important;
-  font-size: 0.9rem;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  background: $color-surface !important;
+  color: $color-text-body !important;
+  border: 1px solid $color-border-subtle !important;
+  transition: background 140ms ease, border 140ms ease;
 
   &:hover {
-    background: color-mix(in srgb, #{$color-primary} 8%, transparent) !important;
+    background: $color-surface-muted !important;
+    border-color: $color-primary !important;
     color: $color-primary !important;
   }
 }
 
-.mat-mdc-form-field-icon-prefix,
-.mat-mdc-form-field-text-prefix {
-  border: none !important;
-  padding: 0 !important;
+// ==== MAT FORM FIELDS ====
+
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mdc-outlined-text-field-outline-color: #{$color-border-subtle};
+  --mdc-outlined-text-field-hover-outline-color: #{$color-primary};
+  --mdc-outlined-text-field-focus-outline-color: #{$color-primary};
+  --mdc-outlined-text-field-label-text-color: #{$color-text-muted};
+  --mdc-outlined-text-field-focus-label-text-color: #{$color-primary};
+  --mdc-outlined-text-field-input-text-color: #{$color-text-body};
+  width: 100%;
+
+  .mat-mdc-text-field-wrapper {
+    background: $color-white !important;
+    border-radius: 12px !important;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: $color-border-subtle !important;
+    border-width: 1.5px !important;
+  }
+
+  &.mat-focused .mdc-notched-outline__leading,
+  &.mat-focused .mdc-notched-outline__notch,
+  &.mat-focused .mdc-notched-outline__trailing {
+    border-color: $color-primary !important;
+    border-width: 2px !important;
+  }
 }
 
-.f-control {
-  border-left: none;
+// ==== CARDS ====
+
+.mat-mdc-card {
+  border-radius: 20px !important;
+  border: 1px solid $color-border-subtle !important;
+  box-shadow: 0 2px 12px rgba(11, 37, 69, 0.06) !important;
+  background: $color-surface !important;
 }
 
-.mat-mdc-form-field .mdc-notched-outline__leading {
-  border-right: 0 !important;
+// ==== DATEPICKER ====
+
+.cdk-overlay-container .mat-datepicker-content {
+  --mat-datepicker-calendar-date-selected-state-background-color: #{$color-primary} !important;
+  --mat-datepicker-calendar-date-today-state-outline-color: #{$color-primary} !important;
+  --mat-datepicker-calendar-date-selected-state-foreground-color: #{$color-accent} !important;
+  --mat-datepicker-calendar-date-hover-state-background-color: color-mix(in srgb, #{$color-primary} 10%, transparent) !important;
+  border-radius: 16px !important;
 }
 
-.mat-mdc-form-field .mdc-notched-outline__notch {
-  border-left: 0 !important;
-  border-right: 0 !important;
+// ==== SLIDER & CHECKBOX ====
+
+.mat-primary {
+  --mdc-slider-active-track-color: #{$color-primary};
+  --mdc-slider-handle-color: #{$color-primary};
+  --mdc-slider-focus-handle-color: #{$color-primary};
+  --mdc-slider-hover-handle-color: #{$color-accent};
+  --mdc-slider-inactive-track-color: #{$color-border-subtle};
+
+  --mat-pseudo-checkbox-full-selected-icon-color: #{$color-primary};
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: #{$color-primary};
 }
 
-.mat-mdc-form-field .mdc-notched-outline__trailing {
-  border-left: 0 !important;
+// ==== MISC ====
+
+.filters-menu {
+  border-radius: 20px !important;
+  overflow: hidden;
 }
+
+.w-100 { width: 100%; }
+.text-end { text-align: right; }

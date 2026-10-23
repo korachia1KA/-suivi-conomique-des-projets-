@@ -18,7 +18,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import {
   catchError, combineLatest, debounceTime, distinctUntilChanged, filter, map,
@@ -58,7 +57,6 @@ type SortState = { field: string; dir: 'asc' | 'desc' };
     MatPaginatorModule,
     RouterLink,
     FormsModule,
-    TranslateModule,
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.scss',
@@ -67,7 +65,6 @@ export class ProjectsComponent {
   private static readonly DEFAULT_MARGIN_MIN = -40;
   private static readonly DEFAULT_MARGIN_MAX = 100;
 
-  private translate = inject(TranslateService);
   private projectService = inject(ProjectsService);
   private buService = inject(BusinessUnitService);
   private authService = inject(AuthService);
@@ -89,7 +86,6 @@ export class ProjectsComponent {
   pageSig = signal(0);
   sizeSig = signal(10);
   totalSig = signal(0);
-  globalProjectsCountSig = signal(0);
   isManagerSig = signal(false);
   isAdminSig = signal(false);
   managerBuIdSig = signal('');
@@ -99,30 +95,25 @@ export class ProjectsComponent {
   buDraftSig = signal<string>('');
   statusDraftSig = signal<string>('');
   startFromDraftSig = signal<string>('');
-  startToDraftSig = signal<string>('');
 
   marginMinSig = signal<number>(ProjectsComponent.DEFAULT_MARGIN_MIN);
   marginMaxSig = signal<number>(ProjectsComponent.DEFAULT_MARGIN_MAX);
-
-  private skipResetOnClose = false;
 
   filtersSig = signal<{
     bu: string;
     status: string;
     startFrom: string;
-    startTo: string;
     marginMin: number | null;
     marginMax: number | null;
   }>({
     bu: '',
     status: '',
     startFrom: '',
-    startTo: '',
     marginMin: null,
     marginMax: null,
   });
 
-  pipeLocale = this.mapLocale(this.translate.getCurrentLang());
+  pipeLocale = 'en-US';
   private readonly adminColumns = ['name', 'bu', 'start', 'end', 'revenue', 'cost', 'margin'];
   private readonly managerColumns = ['name', 'start', 'end', 'revenue', 'cost', 'margin'];
 
@@ -137,33 +128,8 @@ export class ProjectsComponent {
   );
 
   constructor() {
-    const locale = this.mapLocale(this.translate.getCurrentLang());
-    this.pipeLocale = locale;
-    this.dateAdapter.setLocale(locale);
+    this.dateAdapter.setLocale('en-US');
 
-    this.translate.onLangChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(e => {
-        const next = this.mapLocale(e.lang);
-        this.pipeLocale = next;
-        this.dateAdapter.setLocale(next);
-      });
-
-    // ---- Total count for the "count" badge ----
-    toObservable(this.authService.currentUserSig)
-      .pipe(
-        filter(Boolean),
-        switchMap(() =>
-          this.projectService.totals('', 'name', 'asc', {}).pipe(
-            map(res => Number(res.count ?? 0)),
-            catchError(() => of(0))
-          )
-        ),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(count => this.globalProjectsCountSig.set(count));
-
-    // ---- Role detection + WS subscriptions ----
     this.userProfile$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(profile => {
@@ -202,7 +168,6 @@ export class ProjectsComponent {
         }
       });
 
-    // ---- Live refresh: any of the three event kinds triggers a reload ----
     this.realtime.projectCreated$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.reloadSig.update(v => v + 1));
@@ -218,21 +183,6 @@ export class ProjectsComponent {
 
   get displayedColumns(): string[] {
     return this.isAdminSig() ? this.adminColumns : this.managerColumns;
-  }
-
-  get currentLang(): string {
-    return this.translate.getCurrentLang() || 'it';
-  }
-
-  setLang(lang: string) {
-    this.translate.use(lang);
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('lang', lang);
-    }
-  }
-
-  private mapLocale(lang: string | undefined) {
-    return (lang ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
   }
 
   businessUnits$ = toObservable(this.authService.currentUserSig).pipe(
@@ -292,7 +242,6 @@ export class ProjectsComponent {
         bu: isManager ? managerBuId : filters.bu,
         status: filters.status,
         startFrom: filters.startFrom,
-        startTo: filters.startTo,
         marginMin: filters.marginMin,
         marginMax: filters.marginMax,
         page,
@@ -303,7 +252,7 @@ export class ProjectsComponent {
         tap(() => this.loading.set(false)),
         catchError(() => {
           this.loading.set(false);
-          this.errorMessage.set('PROJECT.ERROR.LOAD');
+          this.errorMessage.set('Error loading projects');
           return of([]);
         })
       )
@@ -325,7 +274,6 @@ export class ProjectsComponent {
         bu: isManager ? managerBuId : filters.bu,
         status: filters.status,
         startFrom: filters.startFrom,
-        startTo: filters.startTo,
         marginMin: filters.marginMin,
         marginMax: filters.marginMax,
       }).pipe(
@@ -335,12 +283,7 @@ export class ProjectsComponent {
           totalCost: Number(res.totalCost ?? 0),
           marginPct: Number(res.marginPct ?? 0),
         })),
-        catchError(() => of({
-          count: 0,
-          totalRevenue: 0,
-          totalCost: 0,
-          marginPct: 0,
-        }))
+        catchError(() => of({ count: 0, totalRevenue: 0, totalCost: 0, marginPct: 0 }))
       )
     ),
     shareReplay(1)
@@ -384,7 +327,6 @@ export class ProjectsComponent {
 
   applyFilters() {
     this.pageSig.set(0);
-    this.skipResetOnClose = true;
 
     const marginMinRaw = this.marginMinSig();
     const marginMaxRaw = this.marginMaxSig();
@@ -397,7 +339,6 @@ export class ProjectsComponent {
       bu: this.buDraftSig(),
       status: this.statusDraftSig(),
       startFrom: this.startFromDraftSig(),
-      startTo: this.startToDraftSig(),
       marginMin: useMargin ? marginMinRaw : null,
       marginMax: useMargin ? marginMaxRaw : null,
     });
@@ -408,24 +349,9 @@ export class ProjectsComponent {
     this.buDraftSig.set('');
     this.statusDraftSig.set('');
     this.startFromDraftSig.set('');
-    this.startToDraftSig.set('');
     this.marginMinSig.set(ProjectsComponent.DEFAULT_MARGIN_MIN);
     this.marginMaxSig.set(ProjectsComponent.DEFAULT_MARGIN_MAX);
     this.applyFilters();
-  }
-
-  onFiltersMenuClosed() {
-    if (this.skipResetOnClose) {
-      this.skipResetOnClose = false;
-      return;
-    }
-    const f = this.filtersSig();
-    this.buDraftSig.set(f.bu);
-    this.statusDraftSig.set(f.status);
-    this.startFromDraftSig.set(f.startFrom);
-    this.startToDraftSig.set(f.startTo);
-    this.marginMinSig.set(f.marginMin ?? ProjectsComponent.DEFAULT_MARGIN_MIN);
-    this.marginMaxSig.set(f.marginMax ?? ProjectsComponent.DEFAULT_MARGIN_MAX);
   }
 
   private extractRole(profile: UserProfile | null): string {
@@ -445,13 +371,8 @@ export class ProjectsComponent {
     return String(profile?.businessUnitId ?? profile?.businessUnit?.idBusinessUnit ?? '');
   }
 
-  private isManagerRole(role: string): boolean {
-    return role.includes('MANAGER');
-  }
-
-  private isAdminRole(role: string): boolean {
-    return role.includes('ADMIN');
-  }
+  private isManagerRole(role: string): boolean { return role.includes('MANAGER'); }
+  private isAdminRole(role: string): boolean { return role.includes('ADMIN'); }
 
   private isManagerFromToken(): boolean {
     try {
@@ -463,33 +384,9 @@ export class ProjectsComponent {
       const normalized = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
       const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
       const payload = JSON.parse(atob(padded)) as Record<string, unknown>;
-
       const role = String(payload['role'] ?? payload['authorities'] ?? payload['roles'] ?? '').toUpperCase();
-      if (role.includes('MANAGER')) return true;
-
-      const authorities = payload['authorities'];
-      if (Array.isArray(authorities)) {
-        return authorities.some(a => {
-          const raw = typeof a === 'object' && a !== null
-            ? String((a as Record<string, unknown>)['authority'] ?? '')
-            : String(a);
-          return raw.toUpperCase().includes('MANAGER');
-        });
-      }
-
-      const roles = payload['roles'];
-      if (Array.isArray(roles)) {
-        return roles.some(r => {
-          const raw = typeof r === 'object' && r !== null
-            ? String((r as Record<string, unknown>)['name'] ?? (r as Record<string, unknown>)['authority'] ?? '')
-            : String(r);
-          return raw.toUpperCase().includes('MANAGER');
-        });
-      }
-    } catch {
-      return false;
-    }
-    return false;
+      return role.includes('MANAGER');
+    } catch { return false; }
   }
 
   private isAdminFromToken(): boolean {
@@ -502,32 +399,8 @@ export class ProjectsComponent {
       const normalized = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
       const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
       const payload = JSON.parse(atob(padded)) as Record<string, unknown>;
-
       const role = String(payload['role'] ?? payload['authorities'] ?? payload['roles'] ?? '').toUpperCase();
-      if (role.includes('ADMIN')) return true;
-
-      const authorities = payload['authorities'];
-      if (Array.isArray(authorities)) {
-        return authorities.some(a => {
-          const raw = typeof a === 'object' && a !== null
-            ? String((a as Record<string, unknown>)['authority'] ?? '')
-            : String(a);
-          return raw.toUpperCase().includes('ADMIN');
-        });
-      }
-
-      const roles = payload['roles'];
-      if (Array.isArray(roles)) {
-        return roles.some(r => {
-          const raw = typeof r === 'object' && r !== null
-            ? String((r as Record<string, unknown>)['name'] ?? (r as Record<string, unknown>)['authority'] ?? '')
-            : String(r);
-          return raw.toUpperCase().includes('ADMIN');
-        });
-      }
-    } catch {
-      return false;
-    }
-    return false;
+      return role.includes('ADMIN');
+    } catch { return false; }
   }
 }

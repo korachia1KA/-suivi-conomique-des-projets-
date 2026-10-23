@@ -1,11 +1,12 @@
 import { Component, DestroyRef, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { DecimalPipe, DatePipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatCard } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { DashboardService } from '../../services/dashboard/dashboard';
 import { DashboardResponse, BusinessUnitCard, EmployeeCard, ProjectCard } from '../../models/dashboard.model';
@@ -16,14 +17,24 @@ import { RealtimeService } from '../../services/realtime/realtime';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatCard, MatButtonModule, RouterLink, DecimalPipe, DatePipe, TranslateModule],
+  imports: [
+    // Angular Material
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+
+    // Angular core
+    DecimalPipe,
+    DatePipe,
+    RouterLink,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
-  private translate = inject(TranslateService);
   userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
@@ -33,7 +44,7 @@ export class Dashboard implements OnInit {
   error = signal<string | null>(null);
   dashboard = signal<DashboardResponse | null>(null);
 
-  pipeLocale = this.mapLocale(this.translate.getCurrentLang());
+  pipeLocale = 'en-US';
   Math: any;
 
   ngOnInit(): void {
@@ -41,10 +52,6 @@ export class Dashboard implements OnInit {
       this.loading.set(false);
       return;
     }
-
-    this.translate.onLangChange
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(e => (this.pipeLocale = this.mapLocale(e.lang)));
 
     this.userService.loadProfile();
     this.loadDashboard();
@@ -99,14 +106,10 @@ export class Dashboard implements OnInit {
           }
           const backendMsg =
             typeof err.error?.message === 'string' ? err.error.message : null;
-          this.error.set(backendMsg || `Errore nel caricamento dashboard (${err.status || 0})`);
+          this.error.set(backendMsg || `Error loading dashboard (${err.status || 0})`);
           this.loading.set(false);
         }
       });
-  }
-
-  private mapLocale(lang: string | undefined) {
-    return (lang ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
   }
 
   get role(): 'ADMIN' | 'MANAGER' | 'EMPLOYEE' {
@@ -195,39 +198,6 @@ export class Dashboard implements OnInit {
     return this.dashboard()?.employees ?? [];
   }
 
-  get comparisonRows(): Array<{
-    key: 'revenue' | 'cost' | 'margin';
-    expected: number;
-    current: number;
-    unit: 'currency' | 'percent';
-    goodWhenLower: boolean;
-  }> {
-    const d = this.dashboard();
-    return [
-      {
-        key: 'revenue',
-        expected: Number(d?.expectedRevenue ?? 0),
-        current: this.totalRevenueAmount,
-        unit: 'currency',
-        goodWhenLower: false,
-      },
-      {
-        key: 'cost',
-        expected: Number(d?.expectedCost ?? 0),
-        current: this.totalCostAmount,
-        unit: 'currency',
-        goodWhenLower: true,
-      },
-      {
-        key: 'margin',
-        expected: Number(d?.expectedMargin ?? 0),
-        current: this.averageMarginPct,
-        unit: 'percent',
-        goodWhenLower: false,
-      },
-    ];
-  }
-
   get projectsForCard() {
     return (this.dashboard()?.projects ?? []).slice(0, 4);
   }
@@ -239,9 +209,6 @@ export class Dashboard implements OnInit {
   projectStatusLabel(status?: string | null): string {
     const normalized = String(status ?? '').trim().toUpperCase();
     if (!normalized) return '-';
-    const key = `PROJECT.STATUS.${normalized}`;
-    const translated = this.translate.instant(key);
-    if (translated && translated !== key) return translated;
     return normalized
       .toLowerCase()
       .replace(/_/g, ' ')
@@ -251,47 +218,6 @@ export class Dashboard implements OnInit {
   toPct(value: number, total: number): number {
     if (!total) return 0;
     return (Math.max(0, value) / total) * 100;
-  }
-
-  metricScaleMaxByKey(key: 'revenue' | 'cost' | 'margin'): number {
-    if (key === 'margin') return 100;
-    return this.isManager ? 250_000 : 1_000_000;
-  }
-
-  metricPosByKey(value: number, key: 'revenue' | 'cost' | 'margin'): number {
-    const max = this.metricScaleMaxByKey(key);
-    const pct = (Math.max(0, value) / Math.max(1, max)) * 100;
-    return Math.max(0, Math.min(100, pct));
-  }
-
-  readonly moneyAxisTicksAdmin = [0, 250000, 500000, 750000, 1000000];
-  readonly moneyAxisTicksManager = [0, 62500, 125000, 187500, 250000];
-  readonly marginAxisTicks = [0, 25, 50, 75, 100];
-
-  get moneyAxisTicks(): number[] {
-    return this.isManager ? this.moneyAxisTicksManager : this.moneyAxisTicksAdmin;
-  }
-
-  axisTicksByKey(key: 'revenue' | 'cost' | 'margin'): number[] {
-    return key === 'margin' ? this.marginAxisTicks : this.moneyAxisTicks;
-  }
-
-  axisTickLabel(tick: number, unit: 'currency' | 'percent'): string {
-    if (unit === 'percent') return `${tick}%`;
-    if (tick === 0) return '0€';
-    if (tick >= 1_000_000) return '1M€';
-    return `${Math.round(tick / 1000)}K€`;
-  }
-
-  metricDelta(expected: number, current: number): number {
-    return current - expected;
-  }
-
-  metricDeltaClass(expected: number, current: number, goodWhenLower: boolean): 'up' | 'down' | 'flat' {
-    const delta = current - expected;
-    if (Math.abs(delta) < 0.0001) return 'flat';
-    if (goodWhenLower) return delta <= 0 ? 'up' : 'down';
-    return delta >= 0 ? 'up' : 'down';
   }
 
   buMarginStatusValue(margin: number | null | undefined): 'ok' | 'warning' | 'danger' | 'none' {
@@ -329,15 +255,6 @@ export class Dashboard implements OnInit {
     if (direct) return direct;
 
     const raw = item as any;
-    const displayName = String(raw?.displayName ?? '').trim();
-    if (displayName) return displayName;
-
-    const fullName = String(raw?.fullName ?? '').trim();
-    if (fullName) return fullName;
-
-    const userName = String(raw?.userName ?? raw?.username ?? '').trim();
-    if (userName) return userName;
-
     const firstName = String(raw?.firstName ?? '').trim();
     const lastName = String(raw?.lastName ?? '').trim();
     const composed = `${firstName} ${lastName}`.trim();
@@ -351,7 +268,7 @@ export class Dashboard implements OnInit {
       }
     }
 
-    return 'Utente';
+    return 'User';
   }
 
   employeeEmail(item: EmployeeCard): string {
@@ -384,21 +301,11 @@ export class Dashboard implements OnInit {
     return 'warning';
   }
 
-  deadlineLabel(days: number): string {
-    if (days < 0) {
-      return this.translate.instant('HOME.DEADLINES.LABEL_OVERDUE', { days: Math.abs(days) });
-    }
-    if (days === 0) {
-      return this.translate.instant('HOME.DEADLINES.LABEL_TODAY');
-    }
-    return this.translate.instant('HOME.DEADLINES.LABEL_DAYS', { days });
-  }
-
   deadlineMainLabel(days: number): string {
     return '';
   }
 
   deadlineDaysText(days: number): string {
-    return this.translate.instant('HOME.DEADLINES.LABEL_DAYS', { days: Math.abs(days) });
+    return `${Math.abs(days)} days`;
   }
 }

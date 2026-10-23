@@ -4,13 +4,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';          // ← AJOUTÉ
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -29,12 +29,13 @@ import { TimesheetEntry } from '../../models/timesheet.model';
     DecimalPipe,
     ReactiveFormsModule,
     RouterLink,
-    TranslateModule,
+
     MatCardModule,
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,          // ← AJOUTÉ
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
@@ -47,12 +48,12 @@ export class TimesheetComponent implements OnInit {
   private projectsService = inject(ProjectsService);
   private realtime = inject(RealtimeService);
   private authService = inject(AuthService);
-  private translate = inject(TranslateService);
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
   private platformId = inject(PLATFORM_ID);
 
   projectId = signal('');
+  myProjects = signal<Array<{ id: string; name: string }>>([]);
   entries = signal<TimesheetEntry[]>([]);
   loading = signal(false);
   errorKey = signal<string | null>(null);
@@ -60,7 +61,7 @@ export class TimesheetComponent implements OnInit {
   deletingKey = signal<string | null>(null);
   isAdminOrManager = signal(false);
 
-  pipeLocale = (this.translate.getCurrentLang() ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
+  pipeLocale = 'en-US';
 
   form = this.fb.group({
     month: [this.firstOfCurrentMonth(), [Validators.required]],
@@ -74,10 +75,12 @@ export class TimesheetComponent implements OnInit {
       this.authService.hasRole('ADMIN') || this.authService.hasRole('MANAGER')
     );
 
-    this.translate.onLangChange
+    // Load projects assigned to the current user
+    this.projectsService.getMyProjects()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(e => {
-        this.pipeLocale = (e.lang ?? 'en').startsWith('it') ? 'it-IT' : 'en-US';
+      .subscribe({
+        next: list => this.myProjects.set(list ?? []),
+        error: () => this.myProjects.set([]),
       });
 
     this.realtime.projectUpdated$
@@ -93,11 +96,9 @@ export class TimesheetComponent implements OnInit {
       });
   }
 
-  loadProject(idProject: string): void {
-    const trimmed = (idProject ?? '').trim();
-    if (!trimmed) return;
-    if (this.projectId() === trimmed) return;
-    this.projectId.set(trimmed);
+  selectProject(id: string): void {
+    if (!id) return;
+    this.projectId.set(id);
     this.load();
   }
 
@@ -115,7 +116,7 @@ export class TimesheetComponent implements OnInit {
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
           const code = typeof err.error?.message === 'string' ? err.error.message : 'LOAD';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          this.errorKey.set(code);
         },
       });
   }
@@ -145,7 +146,7 @@ export class TimesheetComponent implements OnInit {
         error: (err: HttpErrorResponse) => {
           this.saving.set(false);
           const code = typeof err.error?.message === 'string' ? err.error.message : 'SAVE';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          this.errorKey.set(code);
         },
       });
   }
@@ -156,8 +157,7 @@ export class TimesheetComponent implements OnInit {
     const key = `${idUser}_${date}`;
     if (this.deletingKey() === key) return;
 
-    const confirmMsg = this.translate.instant('PROJECT.HOURS.CONFIRM_DELETE') as string;
-    if (!confirm(confirmMsg)) return;
+    if (!confirm('Delete this timesheet entry?')) return;
 
     const id = this.projectId();
     if (!id) return;
@@ -174,7 +174,7 @@ export class TimesheetComponent implements OnInit {
         error: (err: HttpErrorResponse) => {
           this.deletingKey.set(null);
           const code = typeof err.error?.message === 'string' ? err.error.message : 'DELETE';
-          this.errorKey.set(`PROJECT.ERROR.${code}`);
+          this.errorKey.set(code);
         },
       });
   }
